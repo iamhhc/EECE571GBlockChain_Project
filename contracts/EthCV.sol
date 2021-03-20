@@ -80,18 +80,22 @@ contract EthCV {
         emit RecordVerified(_uid);
     }
 	
-	//change status, true means others can see the records, false means they can not
-	function changeStatus(address _recordOwner, boolean _isActive) public {
-		require(_recordOwner != 0x0 && msg.sender == _recordOwner, "Only the owner can change the status");
-		for(uint i = 0; i < totalNumber; i++){
-			Record memory _record = records[i];
-			if(_record.recordOwner == _recordOwner){
-				//change the status
-				_record.isActive = _isActive;
-				records[i] = _record;
-			}
+    //change status, true means others can see the records, false means they can not
+    function changeStatus(address _recordOwner, boolean _isActive) public {
+	require(_recordOwner != 0x0 && msg.sender == _recordOwner, "Only the owner can change the status");
+	for(uint i = 0; i < totalNumber; i++){
+		Record memory _record = records[i];
+		if(_record.recordOwner == _recordOwner){
+			//change the status
+			_record.isActive = _isActive;
+			records[i] = _record;
 		}
 	}
+    }
+    
+    //when companies search candidates, they search people or their records?
+    function searchCandidates(){
+    }
 
 
 }
