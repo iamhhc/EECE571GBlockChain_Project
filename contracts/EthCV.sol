@@ -81,20 +81,21 @@ contract EthCV {
     }
 	
     //change status, true means others can see the records, false means they can not
-    function changeStatus(address _recordOwner, boolean _isActive) public {
-	require(_recordOwner != 0x0 && msg.sender == _recordOwner, "Only the owner can change the status");
-	for(uint i = 0; i < totalNumber; i++){
-		Record memory _record = records[i];
-		if(_record.recordOwner == _recordOwner){
-			//change the status
-			_record.isActive = _isActive;
-			records[i] = _record;
+    function changeStatus(address payable _recordOwner, bool _isActive) public {
+		require(_recordOwner != 0x0 && msg.sender == _recordOwner, "Only the owner can change the status");
+		for(uint i = 0; i < totalNumber; i++){
+			Record memory _record = records[i];
+			if(_record.recordOwner == _recordOwner){
+				//change the status
+				_record.isActive = _isActive;
+				records[i] = _record;
+			}
 		}
-	}
     }
     
     //when companies search candidates, they search people or their records?
-    function searchCandidates(){
+	//the front end will get all the records and filter the information needed
+    function searchCandidates() public{
     }
 
 
