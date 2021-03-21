@@ -1,5 +1,6 @@
 //SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.7.6;
+pragma abicoder v2;
 
 contract EthCV {
     string public appName;
@@ -13,32 +14,49 @@ contract EthCV {
         uint recordId;
         address payable recordOwner;
         address payable verifier;
+        Experience experience;
+        Education education;
 
-        // studentID or workID
+        string startMonthYear;
+        string endMonthYear;
+
+        bool isEducation;
+        bool isVerified;
+        bool isActive;
+    }
+
+    struct Experience {
+        // workID
         string uId;
-        // school or company
+        // company
         string orgName;
 
         string position;
         string description;
-        string startMonthYear;
-        string endMonthYear;
 
+    }
 
-        // extra school
+    struct Education {
+        // studentID 
+        string uId;
+        // school
+        string orgName;
+
         string degreeName;
         string fieldsOfStudy;
 
-        bool isVerified;
-		bool isActive;
+        string description;
     }
 
     event RecordCreated (
-        uint indexed recordId
+        uint indexed recordId,
+        address payable indexed recordOwner
     );
 
     event RecordVerified (
-        uint indexed recordId
+        uint indexed recordId,
+        address payable indexed recordOwner,
+        address payable verifier
     );
 
     constructor() {
@@ -48,22 +66,39 @@ contract EthCV {
     // create a record
     function createRecord(string memory _uId, string memory _orgName, string memory _position,
         string memory _description, string memory _startMonthYear, string memory _endMonthYear,
-        string memory _degreeName, string memory _fieldsOfStudy, address payable _verifier) public payable{
-        require(bytes(_uId).length > 0, "User Id is required");
-        require(bytes(_orgName).length > 0, "Org Name is required");
+        string memory _degreeName, string memory _fieldsOfStudy, address payable _verifier, bool _isEducation) public payable{
+
+        require(_verifier != address(0) && msg.sender != _verifier, "Valid verifier address is required");
         require(bytes(_startMonthYear).length > 0, "Start Month Year is required");
         require(bytes(_endMonthYear).length > 0, "End Month Year is required");
-        require(_verifier != 0x0 && msg.sender != _verifier, "Valid verifier address is required");
         // check payment
         require(msg.value >= recordAddPrice, "Payment should be good");
+        Record memory _record;
+        if(!_isEducation) {
+            require(bytes(_uId).length > 0, "Worker Id is required");
+            require(bytes(_orgName).length > 0, "Org Name is required");
+            require(bytes(_position).length > 0, "Position is required");   
+            _record.experience = Experience(_uId, _orgName, _position, _description);
+
+        } else {
+            require(bytes(_uId).length > 0, "Student Id is required");   
+            require(bytes(_orgName).length > 0, "School Name is required");
+            require(bytes(_degreeName).length > 0, "Degree Name is required");
+            require(bytes(_fieldsOfStudy).length > 0, "Field of study is required");  
+            _record.education = Education(_uId, _orgName, _degreeName, _fieldsOfStudy, _description);                      
+        }
 
         totalNumber++;
-        records[totalNumber] = Record(totalNumber, msg.sender, _verifier, _uId,
-                            _orgName, _position, _description, _startMonthYear, _endMonthYear,
-                            _degreeName, _fieldsOfStudy, false);
-
-        emit RecordCreated(_uId);
+        _record.recordId = totalNumber;
+        _record.recordOwner = msg.sender;
+        _record.verifier = _verifier;
+        _record.isEducation = _isEducation;
+        _record.isVerified = false;
+        _record.isActive = true;
+        records[totalNumber] = _record;
+        emit RecordCreated(totalNumber, msg.sender);
     }
+    
 
     // verify a record
     function verifyRecord(uint _recordId) public payable {
@@ -77,26 +112,19 @@ contract EthCV {
         _record.isVerified = true;
         records[_recordId] = _record;
         _verifier.transfer(recordVerifyAward);
-        emit RecordVerified(_uid);
+        emit RecordVerified(_recordId, _record.recordOwner, msg.sender);
     }
-	
+
     //change status, true means others can see the records, false means they can not
-    function changeStatus(address payable _recordOwner, bool _isActive) public {
-		require(_recordOwner != 0x0 && msg.sender == _recordOwner, "Only the owner can change the status");
-		for(uint i = 0; i < totalNumber; i++){
-			Record memory _record = records[i];
-			if(_record.recordOwner == _recordOwner){
-				//change the status
-				_record.isActive = _isActive;
-				records[i] = _record;
-			}
-		}
+    function changeStatus(address _recordOwner, bool _isActive) public {
+        require(_recordOwner != address(0) && msg.sender == _recordOwner, "Only the owner can change the status");
+        for(uint i = 0; i < totalNumber; i++){
+            Record memory _record = records[i];
+            if(_record.recordOwner == _recordOwner){
+                //change the status
+                _record.isActive = _isActive;
+                records[i] = _record;
+            }
+        }
     }
-    
-    //when companies search candidates, they search people or their records?
-	//the front end will get all the records and filter the information needed
-    //function searchCandidates() public{
-    //}
-
-
 }
