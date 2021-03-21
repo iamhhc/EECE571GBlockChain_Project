@@ -58,6 +58,10 @@ contract EthCV {
         address payable indexed recordOwner,
         address payable verifier
     );
+	
+	event StatusChanged (
+		address payable indexed recordOwner
+	);
 
     constructor() {
         appName = "EECE571 ETHCV.COM";
@@ -126,5 +130,6 @@ contract EthCV {
                 records[i] = _record;
             }
         }
+		emit StatusChanged(msg.sender);
     }
 }
