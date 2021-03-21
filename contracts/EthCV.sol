@@ -30,18 +30,15 @@ contract EthCV {
         string fieldsOfStudy;
 
         bool isVerified;
-	bool isActive;
+		bool isActive;
     }
 
     event RecordCreated (
-        uint indexed recordId,
-	address payable indexed recordOwner
+        uint indexed recordId
     );
 
     event RecordVerified (
-        uint indexed recordId,
-	address payable indexed recordOwner,
-        address payable verifier
+        uint indexed recordId
     );
 
     constructor() {
@@ -65,7 +62,7 @@ contract EthCV {
                             _orgName, _position, _description, _startMonthYear, _endMonthYear,
                             _degreeName, _fieldsOfStudy, false);
 
-        emit RecordCreated(_uId, msg.sender);
+        emit RecordCreated(_uId);
     }
 
     // verify a record
@@ -80,25 +77,26 @@ contract EthCV {
         _record.isVerified = true;
         records[_recordId] = _record;
         _verifier.transfer(recordVerifyAward);
-        emit RecordVerified(_recordId, _record.recordOwner, msg.sender);
+        emit RecordVerified(_uid);
     }
 	
     //change status, true means others can see the records, false means they can not
-    function changeStatus(address _recordOwner, boolean _isActive) public {
-	require(_recordOwner != 0x0 && msg.sender == _recordOwner, "Only the owner can change the status");
-	for(uint i = 0; i < totalNumber; i++){
-		Record memory _record = records[i];
-		if(_record.recordOwner == _recordOwner){
-			//change the status
-			_record.isActive = _isActive;
-			records[i] = _record;
+    function changeStatus(address payable _recordOwner, bool _isActive) public {
+		require(_recordOwner != 0x0 && msg.sender == _recordOwner, "Only the owner can change the status");
+		for(uint i = 0; i < totalNumber; i++){
+			Record memory _record = records[i];
+			if(_record.recordOwner == _recordOwner){
+				//change the status
+				_record.isActive = _isActive;
+				records[i] = _record;
+			}
 		}
-	}
     }
     
     //when companies search candidates, they search people or their records?
-//    function searchCandidates(){
-//    }
+	//the front end will get all the records and filter the information needed
+    //function searchCandidates() public{
+    //}
 
 
 }
