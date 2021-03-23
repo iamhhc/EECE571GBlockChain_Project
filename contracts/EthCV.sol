@@ -4,12 +4,30 @@ pragma abicoder v2;
 
 contract EthCV {
     string public appName;
+	uint public totalUserNumber = 0;
     uint public totalNumber = 0;
     uint public recordAddPrice = 1 ether;
     uint public recordVerifyAward = 0.8 ether;
 
+	mapping(uint => User) public users;
     mapping(uint => Record) public records;
 
+	struct User {
+		uint userId;
+		address payable userAddress;
+		string fullName;
+		string email;
+		string password;
+		string selfDescripton;
+		
+		// whenever a record is verified, find the verfier and owner and change below numbers (changes in verify required!)
+		uint   verifiedByNum;    // count the time the user's experiences verified by others
+		uint   hasVerifiedNum;   // count the number of user verifying others
+		
+		bool   isLookingForJobs; // change the status to true if actively looking for jobs
+		Record record;
+	}
+	
     struct Record {
         uint recordId;
         address payable recordOwner;
@@ -22,7 +40,7 @@ contract EthCV {
 
         bool isEducation;
         bool isVerified;
-        bool isActive;
+        bool isActive; // we can keep this in case we need it?
     }
 
     struct Experience {
@@ -66,6 +84,71 @@ contract EthCV {
     constructor() {
         appName = "EECE571 ETHCV.COM";
     }
+	
+	// Register an account (link a metamask account to an password)
+	function Register(address _ethAccount, string memory _fullName, string _memory _email, string memory _password) public{
+		require(bytes(_ethAccount).length > 0, "account can not be empty");
+		require(bytes(_fullName).length > 0, "name can not be empty");
+		require(bytes(_email).length > 0, "email can not be empty");
+		require(bytes(_password).length > 0, "password can not be empty");
+		User memory _user;
+		totalUserNumber++;
+		_user.userId = totalUserNumber;
+		_user.userAddress = _ethAccount;
+		_user.fullName = _fullName;
+		_user.email = _email;
+		_user.password = _password;
+		_user.selfDescripton = "";
+		_user.verifiedByNum = 0;
+		_user.hasVerifiedNum = 0;
+		_user.isLookingForJobs = false;
+		//_user.record = null?
+		users[totalUserNumber] = _user;
+	}
+	
+	/**
+	* input address and password
+	* if they match, return true, otherwise return false.
+	* front end can get this bool and decide what page the user is going to enter
+	*/
+	function Login(address _ethAccount, string memory _password) public 
+		return isLogin (bool)
+		{
+			require(bytes(_ethAccount).length > 0, "address can not be empty");
+			require(bytes(_password).length > 0, "password can not be empty");
+			for(uint i = 0; i < totalUserNumber; i++){
+				Record memory _user = users[i];
+				if(_user.userAddress == _ethAccount){
+					if(_user.password == _password){
+						return true;
+					}
+					else return false;
+				}
+			}
+	}
+	
+	//change the self description
+	function changeDescription(address _accountAddress, string memory _description) public{
+		require(msg.sender == _accountAddress, "only the account owner can change the description");
+		for(uint i = 0; i < totalUserNumber; i++){
+			Record memory _user = users[i];
+			if(_user.userAddress == _accountAddress){
+				_user.selfDescripton = _description;
+				users[i] = _user;
+		}
+	}
+	
+	//change the job seeking status
+	function changeJobStatus(address _accountAddress, bool _isActive) public{
+		require(msg.sender == _accountAddress, "only the account owner can change the status");
+		for(uint i = 0; i < totalUserNumber; i++){
+			Record memory _user = users[i];
+			if(_user.userAddress == _accountAddress){
+				_user.isLookingForJobs = _isActive;
+				users[i] = _user;
+		}
+	}
+	
 
     // create a record
     function createRecord(string memory _uId, string memory _orgName, string memory _position,
