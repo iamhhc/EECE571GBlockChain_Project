@@ -9,6 +9,10 @@ contract EthCV {
     uint public recordAddPrice = 1 ether;
     uint public recordVerifyAward = 0.8 ether;
 
+    uint public UNVERIFIED_CODE = 0;
+    uint public APPROVE_CODE = 1;
+    uint public DISAPPROVE_CODE = 2;
+
     mapping(address => User) private users;
     mapping(uint => Record) public records;
     // users for searching
@@ -27,17 +31,18 @@ contract EthCV {
         uint hasVerifiedNum;   // count the number of user verifying others
 
         bool isLookingForJobs; // change the status to true if actively looking for jobs
+
     }
 
     // search:
     // 1. search user
-    // 2. if user's isLookingForJobs is false, do not display record
+    // 2. if user's isLookingForJobs is false, cann't search record
     // 3. else getPastEvents('RecordCreated', {filter: {recordOwner: xxxx}})
     struct UserForSearch {
         address payable userAddress;
         uint userId;
         string fullName;
-        bool isLookingForJobs;
+        bool isLookingForJobs; 
     }
 
     struct Record {
@@ -51,9 +56,11 @@ contract EthCV {
         string endMonthYear;
 
         bool isEducation;
-        bool isVerified;
+        // 0: not verified 1: verified 2: disapprove
+        uint status;
+
         bool isActive; // we can keep this in case we need it?
-		bool isApproved;
+
     }
 
     struct Experience {
@@ -87,18 +94,27 @@ contract EthCV {
     event RecordVerified (
         uint indexed recordId,
         address payable indexed recordOwner,
-        address payable verifier
+        address payable verifier,
+        bool isApproved
     );
 
     event StatusChanged (
         address payable indexed recordOwner
     );
 
+    event LoginSuccess (
+        User user
+    );
+
+    event LoginFail (
+        string message
+    );
+
     constructor() {
         appName = "EECE571 ETHCV.COM";
     }
 
-    // Register an account (link a metamask account to a password)
+    // Register an account (link a metamask account to an password)
     function Register(address payable _ethAccount, string memory _fullName, string memory _email, string memory _password, string memory _selfDescription, bool _isLookingForJobs) public{
         require(_ethAccount != address(0), "account can not be empty");
         require(users[_ethAccount].userId == 0, "account can not be existed");
@@ -124,6 +140,7 @@ contract EthCV {
         _userForSearch.userId = totalUserNumber;
         _userForSearch.isLookingForJobs = _isLookingForJobs;
         usersWithoutPwd[_ethAccount] = _userForSearch;
+        emit LoginSuccess(_user);
     }
 
     /**
@@ -131,11 +148,13 @@ contract EthCV {
     * if they match, return true, otherwise return false.
     * front end can get this bool and decide what page the user is going to enter
     */
-    function Login(address payable _ethAccount, string memory _password) public returns (bool) {
+    function Login(address payable _ethAccount, string memory _password) public {
         require(_ethAccount != address(0), "account can not be empty");
         require(bytes(_password).length > 0, "password can not be empty");
-        return keccak256(abi.encodePacked(users[_ethAccount].password)) == keccak256(abi.encodePacked(_password)) ;
-    
+        if (keccak256(abi.encodePacked(users[_ethAccount].password)) == keccak256(abi.encodePacked(_password))) {
+            emit LoginSuccess(users[_ethAccount]);
+        }
+        emit LoginFail("Wrong password!");
     }
 
     //change the self description
@@ -153,7 +172,7 @@ contract EthCV {
         UserForSearch memory _userForSearch = usersWithoutPwd[_accountAddress];
         _user.isLookingForJobs = !_user.isLookingForJobs;
         users[_accountAddress] = _user;
-        _userForSearch.isLookingForJobs = !__userForSearch.isLookingForJobs;
+        _userForSearch.isLookingForJobs = !_userForSearch.isLookingForJobs;
         usersWithoutPwd[_accountAddress] = _userForSearch;
     }
 
@@ -187,37 +206,29 @@ contract EthCV {
         _record.recordOwner = msg.sender;
         _record.verifier = _verifier;
         _record.isEducation = _isEducation;
-        _record.isVerified = false;
+        _record.status = UNVERIFIED_CODE;
         _record.isActive = true;
-		_record.isApproved = false;
         records[totalNumber] = _record;
         emit RecordCreated(totalNumber, msg.sender);
     }
 
 
-    // verify a record, including disapproving a record
-    function verifyRecord(uint _recordId, bool _approveStatus) public payable {
+    // verify a record, true: approve, false: disapprove
+    function verifyRecord(uint _recordId, bool _isApproved) public payable {
         Record memory _record = records[_recordId];
         address payable _verifier = _record.verifier;
         require(_record.recordId > 0 && _record.recordId <= totalNumber, "Record should exist");
-        require(!_record.isVerified, "Record should not be verified");
+        require(_record.status == UNVERIFIED_CODE, "Record should not be verified or disapproved");
         require(msg.sender == _verifier, "Record should not be verified by correct address");
 
         // verify it
-        _record.isVerified = true;
-		if(_approveStatus){
-			_record.isApproved = true;
-		}
-		else{
-			_record.isApproved = false;
-		}		
+        _record.status = _isApproved ? APPROVE_CODE : DISAPPROVE_CODE;	
         records[_recordId] = _record;
         _verifier.transfer(recordVerifyAward);
-        // uint verifiedByNum;
+        // uint verifiedByNum; uint hasVerifiedNum;
         users[_record.recordOwner].verifiedByNum++;
         users[_record.verifier].hasVerifiedNum++;
-        // uint hasVerifiedNum;
-        emit RecordVerified(_recordId, _record.recordOwner, msg.sender);
+        emit RecordVerified(_recordId, _record.recordOwner, msg.sender, _isApproved);
     }
 
     //change a specific record status, true means others can see the record, false means they can not
