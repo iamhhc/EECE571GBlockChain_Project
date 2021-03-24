@@ -29,10 +29,15 @@ contract EthCV {
         bool isLookingForJobs; // change the status to true if actively looking for jobs
     }
 
+    // search:
+    // 1. search user
+    // 2. if user's isLookingForJobs is false, do not display record
+    // 3. else getPastEvents('RecordCreated', {filter: {recordOwner: xxxx}})
     struct UserForSearch {
         address payable userAddress;
         uint userId;
         string fullName;
+        bool isLookingForJobs;
     }
 
     struct Record {
@@ -116,6 +121,7 @@ contract EthCV {
         _userForSearch.fullName = _fullName;
         _userForSearch.userAddress = _ethAccount;
         _userForSearch.userId = totalUserNumber;
+        _userForSearch.isLookingForJobs = _isLookingForJobs;
         usersWithoutPwd[_ethAccount] = _userForSearch;
     }
 
@@ -143,8 +149,11 @@ contract EthCV {
     function changeJobStatus(address payable _accountAddress) public{
         require(msg.sender == _accountAddress, "only the account owner can change the status");
         User memory _user = users[_accountAddress];
+        UserForSearch memory _userForSearch = usersWithoutPwd[_accountAddress];
         _user.isLookingForJobs = !_user.isLookingForJobs;
         users[_accountAddress] = _user;
+        _userForSearch.isLookingForJobs = !__userForSearch.isLookingForJobs;
+        usersWithoutPwd[_accountAddress] = _userForSearch;
     }
 
 
