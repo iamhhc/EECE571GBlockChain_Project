@@ -98,7 +98,7 @@ contract EthCV {
         appName = "EECE571 ETHCV.COM";
     }
 
-    // Register an account (link a metamask account to an password)
+    // Register an account (link a metamask account to a password)
     function Register(address payable _ethAccount, string memory _fullName, string memory _email, string memory _password, string memory _selfDescription, bool _isLookingForJobs) public{
         require(_ethAccount != address(0), "account can not be empty");
         require(users[_ethAccount].userId == 0, "account can not be existed");
