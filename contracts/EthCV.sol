@@ -53,6 +53,7 @@ contract EthCV {
         bool isEducation;
         bool isVerified;
         bool isActive; // we can keep this in case we need it?
+		bool isApproved;
     }
 
     struct Experience {
@@ -188,13 +189,14 @@ contract EthCV {
         _record.isEducation = _isEducation;
         _record.isVerified = false;
         _record.isActive = true;
+		_record.isApproved = false;
         records[totalNumber] = _record;
         emit RecordCreated(totalNumber, msg.sender);
     }
 
 
-    // verify a record
-    function verifyRecord(uint _recordId) public payable {
+    // verify a record, including disapprove a record
+    function verifyRecord(uint _recordId, bool _approveStatus) public payable {
         Record memory _record = records[_recordId];
         address payable _verifier = _record.verifier;
         require(_record.recordId > 0 && _record.recordId <= totalNumber, "Record should exist");
@@ -203,6 +205,12 @@ contract EthCV {
 
         // verify it
         _record.isVerified = true;
+		if(_approveStatus){
+			_record.isApproved = true;
+		}
+		else{
+			_record.isApproved = false;
+		}		
         records[_recordId] = _record;
         _verifier.transfer(recordVerifyAward);
         // uint verifiedByNum;
