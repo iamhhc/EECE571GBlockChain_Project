@@ -195,7 +195,7 @@ contract EthCV {
     }
 
 
-    // verify a record, including disapprove a record
+    // verify a record, including disapproving a record
     function verifyRecord(uint _recordId, bool _approveStatus) public payable {
         Record memory _record = records[_recordId];
         address payable _verifier = _record.verifier;
