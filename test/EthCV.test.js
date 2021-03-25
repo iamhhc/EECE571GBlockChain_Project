@@ -144,6 +144,47 @@ contract(EthCV, ([deployer, user, verifier]) => {
             }), truffleAssert.ErrorType.REVERT);
         })
     })
+	
+	describe('disapprove a record', async () => {
+        let result, totalNumber, preVerifierBalance, preSMBalance
+        before(async () => {
+            // first create a new record and then disapprove it.
+            await ethcv.createRecord(
+                '111111112', 'UBC', '', '', '2020-01-01', '2021-01-01', 'Master', 'ECE', verifier, true,
+                { from: user, value: web3.utils.toWei('1', 'Ether') });
+            totalNumber = await ethcv.totalNumber()
+            preVerifierBalance = await web3.eth.getBalance(verifier)
+            preSMBalance = await web3.eth.getBalance(ethcv.address)
+            result = await ethcv.verifyRecord(totalNumber, false, { from: verifier });
+        })
+        it("Disapproving record should be successful if all correct", async () => {
+            truffleAssert.eventEmitted(result, 'RecordVerified', (ev) => {
+                return ev.recordId.toString() === totalNumber.toString()
+                    && ev.recordOwner.toString() === user.toString()
+                    && ev.record.status.toString() === '2'
+                    && ev.record.verifier.toString() === verifier.toString();
+            });
+        })
+        it("Verifier should have the correct balance", async () => {
+            const curVerifierBalance = await web3.eth.getBalance(verifier)
+            const difference = new web3.utils.BN(curVerifierBalance).add(new web3.utils.BN(result.receipt.gasUsed)) - new web3.utils.BN(preVerifierBalance)
+            assert.equal(difference.toString(), web3.utils.toWei('0.8'))
+        })
+        it("Smart Contract should have the correct balance", async () => {
+            const curSMBalance = await web3.eth.getBalance(ethcv.address)
+            assert.equal((preSMBalance - curSMBalance).toString(), web3.utils.toWei('0.8'))
+        })
+        it("A disapproved record can not be disapproved again", async () => {
+            await truffleAssert.fails(ethcv.verifyRecord(totalNumber, false, {
+                from: verifier,
+            }), truffleAssert.ErrorType.REVERT);
+        })
+        it("can not disapprove a record that does not exist", async () => {
+            await truffleAssert.fails(ethcv.verifyRecord(totalNumber + 1, false, {
+                from: verifier,
+            }), truffleAssert.ErrorType.REVERT);
+        })
+    })
 
     describe('change the status of records', async () => {
         let result, totalNumber
@@ -161,12 +202,37 @@ contract(EthCV, ([deployer, user, verifier]) => {
             await truffleAssert.fails(ethcv.changeStatus(user, { from: verifier }), truffleAssert.ErrorType.REVERT);
         });
     })
-
-    // TODO: 
-    // 1. Disapprove a record
-    // 2. Change Job Status
-    // 3. Change Description
-    // ....
+	
+	describe('change job status', async () => {
+        let result
+        before(async () => {
+            result = await ethcv.changeJobStatus(user, { from: user });
+        })
+        it("Changing the job status should be successful if all correct", async () => {
+            truffleAssert.eventEmitted(result, 'JobStatusChanged', (ev) => {
+                return ev.recordOwner.toString() === user.toString();
+            });
+        })
+        it("only the owner can change the status", async () => {
+            await truffleAssert.fails(ethcv.changeJobStatus(user, { from: verifier }), truffleAssert.ErrorType.REVERT);
+        });
+    })
+	
+	describe('change description', async () => {
+        let result
+        before(async () => {
+            result = await ethcv.changeDescription(user, 'new self description', { from: user });
+        })
+        it("Changing the description should be successful if all correct", async () => {
+            truffleAssert.eventEmitted(result, 'DescriptionChanged', (ev) => {
+                return ev.recordOwner.toString() === user.toString();
+            });
+        })
+        it("only the owner can change the description", async () => {
+            await truffleAssert.fails(ethcv.changeDescription(user, 'new self description1', { from: verifier }), 
+				truffleAssert.ErrorType.REVERT);
+        });
+    })
 
 
 });
