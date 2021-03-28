@@ -88,6 +88,10 @@ contract EthCV {
     event LoginSuccess(User user);
 
     event LoginFail(string message);
+	
+	event DescriptionChanged(address indexed recordOwner);
+	
+	event JobStatusChanged(address indexed recordOwner);
 
     constructor() {
         appName = "EECE571 ETHCV.COM";
@@ -160,6 +164,7 @@ contract EthCV {
         User memory _user = users[_accountAddress];
         _user.selfDescription = _description;
         users[_accountAddress] = _user;
+		emit DescriptionChanged(msg.sender);
     }
 
     //change the job seeking status
@@ -174,6 +179,7 @@ contract EthCV {
 
         usersForSearch[_user.userId - 1].isLookingForJobs = _user
             .isLookingForJobs;
+		emit JobStatusChanged(msg.sender);
     }
 
     // create a record
