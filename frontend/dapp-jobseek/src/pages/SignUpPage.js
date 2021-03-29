@@ -15,42 +15,26 @@ import { useAuth } from '../Auth';
 
 let SignUpPage = () => {
   let classes = useStyles();
-  let [displayForm1, setDisplayForm1] = useState(true);
+  let [section, setSection] = useState('accountInfo'); // alternate between accountInfo and description
   let [shouldLeave, setShouldLeave] = useState(false);
   let [jobStatus, setJobStatus] = useState(true);
   let auth = useAuth();
-
-  let cancelButtonClicked = () => {
-    setShouldLeave(true);
-  }
-
-  let nextButtonClicked = () => {
-    setDisplayForm1(false);
-  }
-
-  let backButtonClicked = () => {
-    setDisplayForm1(true);
-  }
 
   let submitButtonClicked = () => {
     // TODO: Implement signup and signin 
     auth.signin(null);
   }
 
-  let jobSwitchChanged = () => {
-    setJobStatus(jobStatus => !jobStatus);
-  }
-
   let accountInfo = (
-      <Box width='70%' padding={1}>
+      <Box width='70%'>
         <Grid container className={classes.formGridContainerRow}>
           <Grid item xs={1}>
-            <IconButton color='secondary' onClick={cancelButtonClicked}>
+            <IconButton color='secondary' onClick={() => setShouldLeave(true)}>
               <HighlightOffIcon fontSize='large' />
             </IconButton>
           </Grid>
           <Grid item xs={6}>
-            <Box className={classes.formGridItemColumn}>
+            <Box className={classes.formGridItemColumn} height='350px'>
               <Box className={classes.textField}>
                 <TextField
                   id='eth-account'
@@ -96,7 +80,7 @@ let SignUpPage = () => {
             </Box>
           </Grid>
           <Grid item xs={1}>
-            <IconButton color='primary' onClick={nextButtonClicked}>
+            <IconButton color='primary' onClick={() => setSection('description')}>
               <NavigateNextIcon fontSize='large' />
             </IconButton>
           </Grid>
@@ -105,15 +89,15 @@ let SignUpPage = () => {
   );
 
   let description = (
-      <Box width='70%' padding={1}>
+      <Box width='70%'>
         <Grid container className={classes.formGridContainerRow}>
           <Grid item xs={1}>
-            <IconButton color='primary' onClick={backButtonClicked}>
+            <IconButton color='primary' onClick={() => setSection('accountInfo')}>
               <NavigateBeforeIcon fontSize='large' />
             </IconButton>
           </Grid>
           <Grid item xs={6}>
-            <Box className={classes.formGridItemColumn}>
+            <Box className={classes.formGridItemColumn} height='350px'>
               <Box className={classes.textField}>
                 <TextField
                   id='description'
@@ -127,7 +111,6 @@ let SignUpPage = () => {
                 />
               </Box>
               <Box className={classes.textField}>
-                
                 <Grid component='label' container className={classes.formGridContainerRow}>
                 <Grid item> 
                     <Typography variant='body1' color='primary'>
@@ -137,7 +120,7 @@ let SignUpPage = () => {
                   <Grid item>
                     <Switch 
                       checked={jobStatus}
-                      onChange={jobSwitchChanged}
+                      onChange={() => setJobStatus(jobStatus => !jobStatus)}
                       color='primary'
                     />
                   </Grid>
@@ -153,7 +136,7 @@ let SignUpPage = () => {
             </Box>
           </Grid>
           <Grid item xs={1}>
-            <IconButton color='primary' onClick={submitButtonClicked}>
+            <IconButton color='primary' onClick={(submitButtonClicked)}>
               <CheckIcon fontSize='large' />
             </IconButton>
           </Grid>
@@ -164,7 +147,7 @@ let SignUpPage = () => {
   return (
     <Container maxWidth='lg' className={classes.content}>
       {Title()}
-      {displayForm1 ? accountInfo : description}
+      {section === 'accountInfo' ? accountInfo : description}
       {shouldLeave ? <Redirect to={pageRoutes.SignInPage}/> : null}
     </Container>
   );

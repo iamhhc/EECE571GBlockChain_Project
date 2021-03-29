@@ -24,7 +24,7 @@ const useStyles = makeStyles((theme) => ({
   },
   button: {
     padding: theme.spacing(1.5, 2, 1.5, 2),
-    // margin: theme.spacing(2),
+    margin: theme.spacing(1),
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
@@ -42,20 +42,23 @@ const useStyles = makeStyles((theme) => ({
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
+    width: '100%',
   },
   linearProgress: {
     margin: theme.spacing(2),
 
   },
   formGridContainerRow: {
-    direction: 'row',
+    display: 'flex',
+    flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-evenly',
   },
   formGridItemColumn: {
-    direction: 'column',
+    display: 'flex',
+    flexDirection: 'column',
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
   }
 }));
 

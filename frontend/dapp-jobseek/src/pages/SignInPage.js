@@ -22,7 +22,7 @@ let SignInPage = () => {
   return (
     <Container maxWidth='lg' className={classes.content}>
       {Title()}
-      <Box width='40%'>
+      <Box width='35%' className={classes.formGridItemColumn}>
         <Box className={classes.textField}>
           <TextField 
             id='eth-account'
@@ -41,27 +41,23 @@ let SignInPage = () => {
             color='primary'
           />
         </Box>
-        <Box className={classes.button}>
-          <Button 
-            className={classes.button}
-            variant='contained'
-            fullWidth={true}
-            color='primary'
-            onClick={signInButtonClicked}>
-            Sign In
-          </Button>
-        </Box>
-        <Box className={classes.button}>
-          <Button 
-            className={classes.button}
-            variant='outlined'
-            fullWidth={true}
-            color='default'
-            component= {Link}
-            to={pageRoutes.SignUpPage}>
-            Sign Up
-          </Button>
-        </Box>
+        <Button 
+          className={classes.button}
+          variant='contained'
+          fullWidth={true}
+          color='primary'
+          onClick={signInButtonClicked}>
+          Sign In
+        </Button>
+        <Button 
+          className={classes.button}
+          variant='outlined'
+          fullWidth={true}
+          color='default'
+          component= {Link}
+          to={pageRoutes.SignUpPage}>
+          Sign Up
+        </Button>
       </Box>
     </Container>
   );
