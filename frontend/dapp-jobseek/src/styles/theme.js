@@ -28,7 +28,8 @@ const theme = createMuiTheme({
     subtitle2: {
       color: '#7f7f7f'
     },
-  }
+  },
+  
 });
 
 export default theme;

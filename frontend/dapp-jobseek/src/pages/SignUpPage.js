@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Box, IconButton, Container, Grid, TextField, LinearProgress, 
-  Typography, Switch, OutlinedInput, InputAdornment } from '@material-ui/core';
+  Typography, Switch, OutlinedInput, InputAdornment, FormControl, InputLabel } from '@material-ui/core';
 import { Redirect } from 'react-router-dom';
 import HighlightOffIcon from '@material-ui/icons/HighlightOff';
 import NavigateNextIcon from '@material-ui/icons/NavigateNext';
@@ -88,6 +88,8 @@ let SignUpPage = () => {
                 />
               </Box>
               <Box className={classes.textField}>
+              <FormControl variant='outlined' fullWidth>
+                <InputLabel className={classes.label}>Password</InputLabel>
                 <OutlinedInput
                   id='password'
                   type={state.showPassword ? 'text' : 'password'}
@@ -107,6 +109,7 @@ let SignUpPage = () => {
                   color='primary'
                   fullWidth={true}
                 />
+              </FormControl>
               </Box>
               <Box className={classes.linearProgress} >
                 <LinearProgress 

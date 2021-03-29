@@ -46,7 +46,6 @@ const useStyles = makeStyles((theme) => ({
   },
   linearProgress: {
     margin: theme.spacing(2),
-
   },
   formGridContainerRow: {
     display: 'flex',
@@ -59,6 +58,11 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'flex-start',
+  },
+  label: {
+    backgroundColor: 'white',
+    paddingRight: '5px',
+    paddingLeft: '2px',
   }
 }));
 

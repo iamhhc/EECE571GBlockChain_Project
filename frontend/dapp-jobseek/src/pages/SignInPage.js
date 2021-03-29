@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '../Auth';
-import { Container, Box, Button, TextField, OutlinedInput, InputAdornment, IconButton } from '@material-ui/core';
+import { Container, Box, Button, TextField, OutlinedInput, InputAdornment, IconButton, FormControl, InputLabel } from '@material-ui/core';
 import { Link } from 'react-router-dom';
 
 import useStyles from '../styles/style';
@@ -43,25 +43,29 @@ let SignInPage = () => {
           />
         </Box>
         <Box className={classes.textField}>
-          <OutlinedInput
-            id='password'
-            type={state.showPassword ? 'text' : 'password'}
-            value={state.password}
-            onChange={(event) => setState({...state, password:event.target.value})}
-            endAdornment={
-              <InputAdornment position='end'>
-                <IconButton
-                  aria-label='toggel password visibility'
-                  onClick={() => setState({...state, showPassword: !state.showPassword})}
-                  edge='end'
-                >
-                  {state.showPassword ? <Visibility /> : <VisibilityOff />}
-                </IconButton>
-              </InputAdornment>
-            }
-            color='primary'
-            fullWidth={true}
-          />
+          <FormControl variant='outlined' fullWidth>
+            <InputLabel className={classes.label}>Password</InputLabel>
+            <OutlinedInput
+              id='password'
+              type={state.showPassword ? 'text' : 'password'}
+              value={state.password}
+              onChange={(event) => setState({...state, password:event.target.value})}
+              endAdornment={
+                <InputAdornment position='end'>
+                  <IconButton
+                    aria-label='toggel password visibility'
+                    onClick={() => setState({...state, showPassword: !state.showPassword})}
+                    edge='end'
+                  >
+                    {state.showPassword ? <Visibility /> : <VisibilityOff />}
+                  </IconButton>
+                </InputAdornment>
+              }
+              color='primary'
+              fullWidth={true}
+            />
+          </FormControl>
+          
         </Box>
         <Button 
           className={classes.button}
