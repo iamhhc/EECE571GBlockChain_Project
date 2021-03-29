@@ -1,10 +1,11 @@
 import React from 'react';
 import { useAuth } from '../Auth';
-import { Container, Box, Button, Typography, TextField } from '@material-ui/core';
+import { Container, Box, Button, TextField } from '@material-ui/core';
 import { Link } from 'react-router-dom';
 
 import useStyles from '../styles/style';
 import pageRoutes from './PageRoutes';
+import { Title } from '../CustomComponents';
 
 
 let SignInPage = () => {
@@ -20,13 +21,7 @@ let SignInPage = () => {
 
   return (
     <Container maxWidth='lg' className={classes.content}>
-      <Box className={classes.title}>
-        <Typography variant='h1'>Distributed</Typography>
-        <Typography variant='h1'>Job Seeking</Typography>
-      </Box>
-      <Box className={classes.subtitle}>
-        <Typography variant='subtitle1'>EECE 571G Project</Typography>
-      </Box>
+      {Title()}
       <Box width='40%'>
         <Box className={classes.textField}>
           <TextField 
@@ -59,7 +54,7 @@ let SignInPage = () => {
         <Box className={classes.button}>
           <Button 
             className={classes.button}
-            variant='contained'
+            variant='outlined'
             fullWidth={true}
             color='default'
             component= {Link}

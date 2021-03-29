@@ -22,6 +22,12 @@ const theme = createMuiTheme({
     h3: {
       color: '#2699FB'
     }, 
+    subtitle1: {
+      color: '#7f7f7f'
+    },
+    subtitle2: {
+      color: '#7f7f7f'
+    },
   }
 });
 

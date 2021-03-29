@@ -62,23 +62,3 @@ let App =  () => {
 }
 
 export default App;
-
-
-// Redirect to sign in page if users are trying to access private routes
-// let PrivateRoute = ({ children, ...rest}) => {
-//   let auth = useAuth();
-//   return (
-//     <Route 
-//       {...rest}
-//       render={({ location }) => 
-//         auth.user ? (children) :
-//         (<Redirect
-//             to={{
-//               pathname: pageRoutes.SignInPage,
-//               state: {from:location},
-//             }}
-//         />)
-//       }
-//     />
-//   );
-// }
