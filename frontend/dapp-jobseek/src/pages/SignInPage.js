@@ -1,14 +1,23 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useAuth } from '../Auth';
-import { Container, Box, Button, TextField } from '@material-ui/core';
+import { Container, Box, Button, TextField, OutlinedInput, InputAdornment, IconButton } from '@material-ui/core';
 import { Link } from 'react-router-dom';
 
 import useStyles from '../styles/style';
 import pageRoutes from './PageRoutes';
 import { Title } from '../CustomComponents';
 
+import Visibility from '@material-ui/icons/Visibility';
+import VisibilityOff from '@material-ui/icons/VisibilityOff';
+
 
 let SignInPage = () => {
+
+  let [state, setState] = useState({
+    ethAccount: '',
+    password: '',
+    showPassword: false,
+  });
 
   const classes = useStyles();
   const auth = useAuth();
@@ -30,15 +39,28 @@ let SignInPage = () => {
             variant='outlined'
             fullWidth={true}
             color='primary'
+            onChange={(event) => setState({...state, ethAccount:event.target.value})}
           />
         </Box>
         <Box className={classes.textField}>
-          <TextField 
+          <OutlinedInput
             id='password'
-            label='Password'
-            variant='outlined'
-            fullWidth={true}
+            type={state.showPassword ? 'text' : 'password'}
+            value={state.password}
+            onChange={(event) => setState({...state, password:event.target.value})}
+            endAdornment={
+              <InputAdornment position='end'>
+                <IconButton
+                  aria-label='toggel password visibility'
+                  onClick={() => setState({...state, showPassword: !state.showPassword})}
+                  edge='end'
+                >
+                  {state.showPassword ? <Visibility /> : <VisibilityOff />}
+                </IconButton>
+              </InputAdornment>
+            }
             color='primary'
+            fullWidth={true}
           />
         </Box>
         <Button 
