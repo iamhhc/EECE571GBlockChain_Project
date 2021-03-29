@@ -3,12 +3,28 @@ import ReactDOM from 'react-dom';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 
+import {authContext, useProvideAuth} from './Auth';
+
+// Provide auth context at the highest level of the App
+let ProvideAuth = ({ children }) => {
+  let auth = useProvideAuth();
+  return (
+    <authContext.Provider value={auth}>
+      {children}
+    </authContext.Provider>
+  );
+}
+
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <ProvideAuth>
+      <App /> 
+    </ProvideAuth>
   </React.StrictMode>,
   document.getElementById('root')
 );
+
+
 
 // If you want to start measuring performance in your app, pass a function
 // to log results (for example: reportWebVitals(console.log))

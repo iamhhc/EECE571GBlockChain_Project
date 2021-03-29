@@ -1,4 +1,4 @@
-import { createContext, useContext} from React;
+import { createContext, useContext, useState} from 'react';
 
 // Create a context to provide authentication info
 export let authContext = createContext();
@@ -13,13 +13,19 @@ export let useProvideAuth = () => {
   // TODO: implement sign in here
   const signin = (callback) => {
     setUser('user');
-    callback();
+    if (typeof callback === 'function') {
+      callback();
+    }
+    return true;
   }
 
   // TODO: implement sign out here
-  const signout = () => {
+  const signout = (callback) => {
     setUser(null);
-    callback();
+    if (typeof callback === 'function') {
+      callback();
+    }
+    return true;
   }
 
   return {
