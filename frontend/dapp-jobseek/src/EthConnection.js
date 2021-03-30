@@ -1,13 +1,76 @@
-import React, { createContext, useState, useContext } from 'react';
+import { createContext, useState, useContext } from 'react';
 
 export const ethConnectionContext = createContext();
 
 export const useEthConnection = () => {
   return useContext(ethConnectionContext);
-}
+};
+
+export const VerifyStatus = {
+  Unverified: 0,
+  Verified: 1,
+  Disapproved: 2,
+};
 
 export const useProvideEthConnection = () => {
   const [ethData, setEthData] = useState(null);
+
+  // TODO: fetch data from the backend
+  const updateEthData = () => {
+
+  }
+
+  const getUserByAddress = (address) => {
+    let {totalUserNumber, users} = ethData; 
+    for (let i = 0; i < totalUserNumber; i ++) {
+      if (users[i].userAddress === address) {
+        return users[i];
+      }
+    }
+
+    return null;
+  }
+
+  const getVerifiedExperiencesByAddress = (address) => {
+    let {totalRecordNumber, records} = ethData;
+
+    let experiences = [];
+    for (let i = 0; i < totalRecordNumber; i ++) {
+      if (records[i].status == VerifyStatus.Verified && records[i].recordOwner == address) {
+        experiences.push(records[i]);
+      }
+    }
+
+    return experiences;
+  }
+
+  const getUnverifiedExperiencesByAddress = (address) => {
+    let {totalRecordNumber, records} = ethData;
+
+    let experiences = [];
+    for (let i = 0; i < totalRecordNumber; i ++) {
+      if (records[i].status == VerifyStatus.Unverified && records[i].recordOwner == address) {
+        experiences.push(records[i]);
+      }
+    }
+
+    return experiences;
+  }
+
+  const getVerifiyingInvitationsByAddress = (address) => {
+    let {totalRecordNumber, records} = ethData;
+
+    let experiences = [];
+    for (let i = 0; i < totalRecordNumber; i ++) {
+      if (records[i].status == VerifyStatus.Unverified && records[i].verifier == address) {
+        experiences.push(records[i]);
+      }
+    }
+
+    return experiences;
+  }
+
+
 
   // call this function when page refreshed to load the data in local storage
   const refreshed = async () => {
@@ -76,6 +139,23 @@ export const useProvideEthConnection = () => {
           status: 0,
           isActive: true,
         },
+        {
+          recordId: 3,
+          recordOwner: 'testCompany',
+          verifier: 'testApplicant',
+          experience: {
+            uId: 2333,
+            orgName: 'Company Experience',
+            position: 'Company Position',
+            description: 'this is a fake company experience',
+          },
+          education: null,
+          startMonthYear: '05/2018',
+          endMonthYear: '09/2019',
+          isEducation: false,
+          status: 0,
+          isActive: true,
+        },
       ],
     }));
 
@@ -86,8 +166,13 @@ export const useProvideEthConnection = () => {
 
   return {
     ethData,
+    updateEthData,
     refreshed,
     fakeData,
+    getUserByAddress,
+    getVerifiedExperiencesByAddress,
+    getUnverifiedExperiencesByAddress,
+    getVerifiyingInvitationsByAddress,
   };
 }
 
