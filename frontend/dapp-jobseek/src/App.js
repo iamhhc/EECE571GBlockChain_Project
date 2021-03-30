@@ -8,6 +8,10 @@ import MainPage from './pages/MainPage';
 import SignInPage from './pages/SignInPage';
 import SignUpPage from './pages/SignUpPage';
 import NotFoundPage from './pages/NotFoundPage';
+import SettingPage from './pages/SettingPage';
+import SearchPage from './pages/SearchPage';
+import VerifyExperiencePage from './pages/VerifyExperiencePage';
+import CreateExperiencePage from './pages/CreateExperiencePage';
 
 // page routes
 import pageRoutes from './pages/PageRoutes';
@@ -20,6 +24,7 @@ import {
 } from 'react-router-dom';
 
 import { ethConnectionContext, useProvideEthConnection } from './EthConnection';
+
 
 let ProvideEthConnection = ({children}) => {
   let ethConnection = useProvideEthConnection();
@@ -60,6 +65,22 @@ let App =  () => {
 
                 <Route path={pageRoutes.MainPage}>
                   {signedIn ? <MainPage /> : <Redirect to={pageRoutes.SignInPage} /> }
+                </Route>
+
+                <Route path={pageRoutes.SearchPage}>
+                  {signedIn ? <SearchPage /> : <Redirect to={pageRoutes.SignInPage} /> }
+                </Route>
+
+                <Route path={pageRoutes.SettingPage}>
+                  {signedIn ? <SettingPage /> : <Redirect to={pageRoutes.SignInPage} /> }
+                </Route>
+
+                <Route path={pageRoutes.VerifyExperiencePage}>
+                  {signedIn ? <VerifyExperiencePage /> : <Redirect to={pageRoutes.SignInPage} /> }
+                </Route>
+
+                <Route path={pageRoutes.CreateExperiencePage}>
+                  {signedIn ? <CreateExperiencePage /> : <Redirect to={pageRoutes.SignInPage} /> }
                 </Route>
 
                 <Route path={pageRoutes.NotFoundPage}>
