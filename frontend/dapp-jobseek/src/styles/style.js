@@ -1,4 +1,4 @@
-import {makeStyles} from '@material-ui/core';
+import { makeStyles, withStyles } from '@material-ui/core';
 
 // Custome style added to material-ui
 
@@ -63,6 +63,15 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: 'white',
     paddingRight: '5px',
     paddingLeft: '2px',
+  },
+  form: {
+    width: '100%',
+  },
+  expTitle: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    padding: theme.spacing(10, 0, 1, 0),
   }
 }));
 
