@@ -1,10 +1,136 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Button, Grid, LinearProgress } from "@material-ui/core";
+import { Box, Button, Grid, LinearProgress, TextField, Typography } 
+  from '@material-ui/core';
+import { Link } from 'react-router-dom';
 
 import { useAuth } from "../Auth";
-import useStyles from '../styles/style';
 import { useEthConnection } from '../EthConnection';
-import { Header, UnverifiedExperienceDisplay, UserDataDisplay, VerifiedExperienceDisplay, VerifyingInvitationDisplay } from '../CustomComponents';
+import { Header, UserDataThumbnail, Record } from '../CustomComponents';
+import pageRoutes from './PageRoutes';
+import useStyles from '../styles/style';
+
+const UserDataDisplay = (props) => {
+  const classes = useStyles();
+  const userData = props.value;
+  return (
+    <Box className={classes.content}>
+      <UserDataThumbnail value={userData}/>
+      
+      <Box className={classes.verifyNumber} textAlign='center'>
+        <Typography variant='subtitle2'>
+          Verified By {userData.verifiedByNum} Accounts
+        </Typography>
+      </Box>
+      <Box className={classes.verifyNumber} textAlign='center'>
+        <Typography variant='subtitle2'>
+          Has Verified {userData.hasVerifiedNum} Accounts
+        </Typography>
+      </Box>
+      
+      <Box className={classes.selfDescription}>
+        <TextField 
+          label='Self Description'
+          rowsMax={10}
+          rows={5}
+          multiline
+          value={userData.selfDescription}
+          disabled
+          variant='outlined'
+          fullWidth
+        />
+      </Box>
+
+      <Button
+        variant='contained'
+        color='primary'
+        component={Link} to={pageRoutes.CreateExperiencePage}
+      >
+        Create a New Experience
+      </Button>
+      
+    </Box>
+  );
+}
+
+const VerifiedExperienceDisplay = (props) => {
+  const classes = useStyles();
+  const records = props.value;
+
+  return (
+    <Box className={classes.content}>
+      <Box className={classes.experienceTitle1}>
+        <Typography variant='subtitle2'>Verified Experience</Typography>
+      </Box>
+      <Grid container direction='column' justify='space-evenly' alignItems='flex-start'>
+        {records.map((record) => (
+          <Grid key={record.recordId} item>
+            <Box className={classes.content}>
+              <Record record={record} />
+            </Box>
+          </Grid>
+        ))}
+      </Grid>
+    </Box>
+  );
+}
+
+const VerifyingInvitationDisplay = (props) => {
+  const classes = useStyles();
+  const records = props.value;
+
+  return (
+    <Box className={classes.content}>
+      <Box className={classes.experienceTitle3}>
+        <Typography variant='subtitle2'>Verifying Invitations</Typography>
+      </Box>
+
+      <Grid container direction='column' justify='space-evenly' alignItems='flex-start'>
+        {records.map((record) => (
+          <Grid key={record.recordId} item>
+            <Box className={classes.content}>
+              <Button 
+                component={Link} 
+                to={{
+                  pathname: pageRoutes.VerifyExperiencePage,
+                  state: {
+                    record
+                  },
+                }} 
+                value={record}>
+                <Record record={record}/>
+              </Button>
+              
+            </Box>
+          </Grid>
+        ))}
+      </Grid>
+      
+    </Box>
+  );
+}
+
+const UnverifiedExperienceDisplay = (props) => {
+  const classes = useStyles();
+  const records = props.value;
+
+  return (
+    <Box className={classes.content}>
+      <Box className={classes.experienceTitle2}>
+        <Typography variant='subtitle2'>Unverified Experience</Typography>
+      </Box>
+      <Grid container direction='column' justify='space-evenly' alignItems='flex-start'>
+        {records.map((record) => (
+          <Grid key={record.recordId} item>
+            <Box className={classes.content}>
+              <Record record={record} />
+            </Box>
+          </Grid>
+        ))}
+      </Grid>
+    </Box>
+    
+  );
+}
 
 let MainPage = () => {
 
