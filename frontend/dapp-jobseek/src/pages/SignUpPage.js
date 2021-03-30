@@ -39,10 +39,6 @@ let SignUpPage = () => {
     auth.signin(null);
   }
 
-  useEffect(() => {
-    console.log(state);
-  })
-
   let accountInfo = (
       <Box width='70%'>
         <Grid container className={classes.formGridContainerRow}>
