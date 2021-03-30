@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Box, IconButton, Container, Grid, TextField, LinearProgress, 
   Typography, Switch, OutlinedInput, InputAdornment, FormControl, InputLabel } from '@material-ui/core';
 import { Redirect } from 'react-router-dom';
@@ -190,7 +190,7 @@ let SignUpPage = () => {
 
   return (
     <Container maxWidth='lg' className={classes.content}>
-      {Title()}
+      <Title />
       {state.section === 'accountInfo' ? accountInfo : description}
       {state.shouldLeave ? <Redirect to={pageRoutes.SignInPage}/> : null}
     </Container>

@@ -21,6 +21,10 @@ export const useProvideEthConnection = () => {
   }
 
   const getUserByAddress = (address) => {
+    if (ethData == null) {
+      return null;
+    }
+
     let {totalUserNumber, users} = ethData; 
     for (let i = 0; i < totalUserNumber; i ++) {
       if (users[i].userAddress === address) {
@@ -32,55 +36,62 @@ export const useProvideEthConnection = () => {
   }
 
   const getVerifiedExperiencesByAddress = (address) => {
+    if (ethData == null) {
+      return [];
+    }
     let {totalRecordNumber, records} = ethData;
 
     let experiences = [];
     for (let i = 0; i < totalRecordNumber; i ++) {
-      if (records[i].status == VerifyStatus.Verified && records[i].recordOwner == address) {
+      if (records[i].status === VerifyStatus.Verified && records[i].recordOwner === address) {
         experiences.push(records[i]);
       }
     }
 
-    return experiences;
+    return experiences.length === 0 ? null : experiences; 
   }
 
   const getUnverifiedExperiencesByAddress = (address) => {
+    if (ethData == null) {
+      return [];
+    }
     let {totalRecordNumber, records} = ethData;
 
     let experiences = [];
     for (let i = 0; i < totalRecordNumber; i ++) {
-      if (records[i].status == VerifyStatus.Unverified && records[i].recordOwner == address) {
+      if (records[i].status === VerifyStatus.Unverified && records[i].recordOwner === address) {
         experiences.push(records[i]);
       }
     }
 
-    return experiences;
+    return experiences.length === 0 ? null : experiences;
   }
 
   const getVerifiyingInvitationsByAddress = (address) => {
+    if (ethData == null) {
+      return [];
+    }
     let {totalRecordNumber, records} = ethData;
 
     let experiences = [];
     for (let i = 0; i < totalRecordNumber; i ++) {
-      if (records[i].status == VerifyStatus.Unverified && records[i].verifier == address) {
+      if (records[i].status === VerifyStatus.Unverified && records[i].verifier === address) {
         experiences.push(records[i]);
       }
     }
 
-    return experiences;
+    return experiences.length === 0 ? null : experiences;
   }
 
-
-
   // call this function when page refreshed to load the data in local storage
-  const refreshed = async () => {
+  const refreshed = () => {
     setEthData(JSON.parse(localStorage.getItem('ethData')));
   }
 
   const fakeData = () => {
     localStorage.setItem('ethData', JSON.stringify({
       totalUserNumber: 2,
-      totalRecordNumber: 2,
+      totalRecordNumber: 6,
       users: [
         {
           userAddress: 'testApplicant',
@@ -125,6 +136,40 @@ export const useProvideEthConnection = () => {
           recordId: 2,
           recordOwner: 'testApplicant',
           verifier: 'testCompany',
+          experience: {
+            uId: 2333,
+            orgName: 'Company Experience',
+            position: 'Company Position',
+            description: 'this is a fake company experience',
+          },
+          education: null,
+          startMonthYear: '05/2018',
+          endMonthYear: '09/2019',
+          isEducation: false,
+          status: 1,
+          isActive: true,
+        },
+        {
+          recordId: 3,
+          recordOwner: 'testApplicant',
+          verifier: 'testCompany',
+          experience: {
+            uId: 2333,
+            orgName: 'Company Experience',
+            position: 'Company Position',
+            description: 'this is a fake company experience',
+          },
+          education: null,
+          startMonthYear: '05/2018',
+          endMonthYear: '09/2019',
+          isEducation: false,
+          status: 1,
+          isActive: true,
+        },
+        {
+          recordId: 4,
+          recordOwner: 'testApplicant',
+          verifier: 'testCompany',
           experience: null,
           education: {
             uId: 6666,
@@ -140,7 +185,25 @@ export const useProvideEthConnection = () => {
           isActive: true,
         },
         {
-          recordId: 3,
+          recordId: 5,
+          recordOwner: 'testApplicant',
+          verifier: 'testCompany',
+          experience: null,
+          education: {
+            uId: 6666,
+            orgName: 'Education Experience',
+            degreeName: 'Education Degree',
+            fieldOfStudy: 'Education Field of Study',
+            description: 'this is a fake education experience',
+          },
+          startMonthYear: '05/2018',
+          endMonthYear: '09/2019',
+          isEducation: true,
+          status: 0,
+          isActive: true,
+        },
+        {
+          recordId: 6,
           recordOwner: 'testCompany',
           verifier: 'testApplicant',
           experience: {
@@ -164,8 +227,14 @@ export const useProvideEthConnection = () => {
     return true;
   }
 
+  const clearData = () => {
+    setEthData(null);
+    localStorage.setItem('ethData', null);
+  }
+
   return {
     ethData,
+    clearData,
     updateEthData,
     refreshed,
     fakeData,

@@ -1,11 +1,10 @@
-import React, { useEffect } from 'react';
-import { Button, Container } from "@material-ui/core";
+import React, { useEffect, useState } from 'react';
+import { Box, Button, Grid, LinearProgress } from "@material-ui/core";
 
 import { useAuth } from "../Auth";
 import useStyles from '../styles/style';
 import { useEthConnection } from '../EthConnection';
-import { Link } from 'react-router-dom';
-import pageRoutes from './PageRoutes';
+import { Header, UnverifiedExperienceDisplay, UserDataDisplay, VerifiedExperienceDisplay, VerifyingInvitationDisplay } from '../CustomComponents';
 
 let MainPage = () => {
 
@@ -13,36 +12,87 @@ let MainPage = () => {
   let classes = useStyles();
   let ethConnection = useEthConnection();
 
+  const [isLoading, setIsLoading] = useState(true);
+  const [userData, setUserData] = useState(null);
+  const [verifiedExps, setVerifiedExps] = useState(null);
+  const [unverifiedExps, setUnverifiedExps] = useState(null);
+  const [verifyingInvitations, setVerifyingInvitations] = useState(null);
+
   useEffect(() => {
-    ethConnection.refreshed();
+    setIsLoading(true);
+    auth.refreshed();
+    ethConnection.fakeData();
+    setIsLoading(false);
   }, []);
+
+  useEffect(() => {
+    let address = auth.user.userAddress;
+    setIsLoading(true);
+    setUserData(ethConnection.getUserByAddress(address)); 
+    setVerifiedExps(ethConnection.getVerifiedExperiencesByAddress(address));
+    setUnverifiedExps(ethConnection.getUnverifiedExperiencesByAddress(address));
+    setVerifyingInvitations(ethConnection.getVerifiyingInvitationsByAddress(address));
+    setIsLoading(false);
+  }, [ethConnection.ethData]);
 
   let signOutClicked = () => {
     auth.signout(null);
+    ethConnection.clearData();
     console.log('user signed out: ', auth.user);
   }
 
+  console.log(userData, verifiedExps, unverifiedExps, verifyingInvitations);
+
   return(
-    <Container maxWidth='lg' className={classes.content}>
-      <h1>Main Page</h1>
-      <Button onClick={signOutClicked}>Sign Out</Button>
+    <Box className={classes.content}>
+      <Header />
+      {isLoading ? <LinearProgress className={classes.content}/>:  
+        <Box className={classes.content}>
+          <Grid container className={classes.mainPageContent}>
+            {
+              userData == null ? null :
+              <Grid item xs={3}>
+                <Box padding={2}>
+                  <UserDataDisplay value={userData} />
+                </Box>
+              </Grid>
+            }
+            
+            {
+              verifiedExps == null ? null :
+              <Grid item xs={3}>
+                <Box padding={2}>
+                  <VerifiedExperienceDisplay value={verifiedExps} />
+                </Box>
+              </Grid>
+            }
+            {
+              unverifiedExps == null ? null :
+              <Grid item xs={3}> 
+                <Box padding={2}>
+                  <UnverifiedExperienceDisplay value={unverifiedExps} />
+                </Box>
+              </Grid>
+            }
+            {
+              verifyingInvitations == null ? null :
+              <Grid item xs={3}> 
+                <Box padding={2}>
+                  <VerifyingInvitationDisplay value={verifyingInvitations} />
+                </Box>
+              </Grid>
+            }
+            
+          </Grid>
 
-      <Button component={Link} to={pageRoutes.SettingPage}>
-        Setting Page
-      </Button>
 
-      <Button component={Link} to={pageRoutes.SearchPage}>
-        Search Page
-      </Button>
+          <Button onClick={signOutClicked}>Sign Out</Button>
 
-      <Button component={Link} to={pageRoutes.VerifyExperiencePage}>
-        Verify Experience
-      </Button>
-
-      <Button component={Link} to={pageRoutes.CreateExperiencePage}>
-        Create Experience
-      </Button>
-    </Container>
+        </Box>
+      }
+      
+      
+    </Box>
   );
 }
 

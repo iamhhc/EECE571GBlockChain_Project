@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useAuth } from '../Auth';
 import { Container, Box, Button, TextField, OutlinedInput, InputAdornment, IconButton, FormControl, InputLabel } from '@material-ui/core';
 import { Link } from 'react-router-dom';
@@ -9,6 +9,7 @@ import { Title } from '../CustomComponents';
 
 import Visibility from '@material-ui/icons/Visibility';
 import VisibilityOff from '@material-ui/icons/VisibilityOff';
+import { useEthConnection } from '../EthConnection';
 
 
 let SignInPage = () => {
@@ -21,16 +22,18 @@ let SignInPage = () => {
 
   const classes = useStyles();
   const auth = useAuth();
+  const ethConnection = useEthConnection();
 
   let signInButtonClicked = () => {
     // TODO: sign in here
     auth.signin(null);
     console.log('user signed in');
+    ethConnection.fakeData();
   }
 
   return (
     <Container maxWidth='lg' className={classes.content}>
-      {Title()}
+      <Title />
       <Box width='35%' className={classes.formGridItemColumn}>
         <Box className={classes.textField}>
           <TextField 

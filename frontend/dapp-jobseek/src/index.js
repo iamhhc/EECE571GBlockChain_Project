@@ -5,6 +5,8 @@ import reportWebVitals from './reportWebVitals';
 
 import {authContext, useProvideAuth} from './Auth';
 
+import './styles/index.css';
+
 // Provide auth context at the highest level of the App
 let ProvideAuth = ({ children }) => {
   let auth = useProvideAuth();
