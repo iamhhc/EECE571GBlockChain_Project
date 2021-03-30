@@ -107,6 +107,8 @@ contract(EthCV, ([deployer, user, verifier]) => {
     describe('verify a record of education', async () => {
         let result, totalNumber, preVerifierBalance, preSMBalance
         before(async () => {
+            // the verifier should register first
+            await ethcv.Register(verifier, 'UBC', 'verifier@ubc.ca', 'pwd222', 'I am a verifier from ubc', false)
             // first create a new record and then verify it.
             await ethcv.createRecord(
                 '111111112', 'UBC', '', '', '2020-01-01', '2021-01-01', 'Master', 'ECE', verifier, true,
