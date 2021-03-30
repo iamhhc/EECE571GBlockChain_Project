@@ -35,6 +35,10 @@ contract EthCV {
         uint256 userId;
         address payable userAddress;
         string fullName;
+        string email;
+        string selfDescription;
+        uint256 verifiedByNum; // count the time the user's experiences verified by others
+        uint256 hasVerifiedNum;
         bool isLookingForJobs;
     }
 
@@ -119,8 +123,6 @@ contract EthCV {
         _user.email = _email;
         _user.password = _password;
         _user.selfDescription = _selfDescription;
-        _user.verifiedByNum = 0;
-        _user.hasVerifiedNum = 0;
         _user.isLookingForJobs = _isLookingForJobs;
         users[_ethAccount] = _user;
 
@@ -129,6 +131,8 @@ contract EthCV {
         _userForSearch.userAddress = _ethAccount;
         _userForSearch.userId = totalUserNumber;
         _userForSearch.isLookingForJobs = _isLookingForJobs;
+        _userForSearch.email = _email;
+        _userForSearch.selfDescription = _selfDescription;
         usersForSearch.push(_userForSearch);
         emit LoginSuccess(_user);
     }
@@ -206,10 +210,10 @@ contract EthCV {
         require(bytes(_endMonthYear).length > 0, "End Month Year is required");
         // check payment
         require(msg.value >= recordAddPrice, "Payment should be good");
+        require(bytes(_uId).length > 0, "Id is required");
+        require(bytes(_orgName).length > 0, "Org Name is required");
         Record memory _record;
         if (!_isEducation) {
-            require(bytes(_uId).length > 0, "Worker Id is required");
-            require(bytes(_orgName).length > 0, "Org Name is required");
             require(bytes(_position).length > 0, "Position is required");
             _record.experience = Experience(
                 _uId,
@@ -218,13 +222,7 @@ contract EthCV {
                 _description
             );
         } else {
-            require(bytes(_uId).length > 0, "Student Id is required");
-            require(bytes(_orgName).length > 0, "School Name is required");
             require(bytes(_degreeName).length > 0, "Degree Name is required");
-            require(
-                bytes(_fieldsOfStudy).length > 0,
-                "Field of study is required"
-            );
             _record.education = Education(
                 _uId,
                 _orgName,
@@ -269,6 +267,8 @@ contract EthCV {
         // uint verifiedByNum; uint hasVerifiedNum;
         users[_record.recordOwner].verifiedByNum++;
         users[_record.verifier].hasVerifiedNum++;
+        usersForSearch[users[_record.recordOwner].userId - 1].verifiedByNum++;
+        usersForSearch[users[_record.verifier].userId - 1].hasVerifiedNum++;
         emit RecordVerified(_recordId, _record.recordOwner, _record);
     }
 
