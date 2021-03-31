@@ -9,9 +9,15 @@ import { UserDataThumbnail, Record } from '../CustomComponents';
 import pageRoutes from './PageRoutes';
 import useStyles from '../styles/style';
 
-const UserDataDisplay = (props) => {
+export const UserDataDisplay = (props) => {
   const classes = useStyles();
+
+  const { enableCreateExpButton } = props;
   const userData = props.value;
+
+  
+
+
   return (
     <Box className={classes.content}>
       <UserDataThumbnail value={userData}/>
@@ -40,13 +46,17 @@ const UserDataDisplay = (props) => {
         />
       </Box>
 
-      <Button
-        variant='contained'
-        color='primary'
-        component={Link} to={pageRoutes.CreateExperiencePage}
-      >
-        Create a New Experience
-      </Button>
+      { enableCreateExpButton ? 
+        <Box className={classes.button}>
+          <Button
+            variant='contained'
+            color='primary'
+            component={Link} to={pageRoutes.CreateExperiencePage}
+            fullWidth
+          > 
+            Create a New Experience
+          </Button> 
+        </Box> : null }
       
     </Box>
   );
@@ -133,14 +143,6 @@ const VerifyingInvitationDisplay = (props) => {
 
 let DashboardPage = (props) => {
   const classes = useStyles();
-  let auth = useAuth();
-  let ethConnection = useEthConnection();
-
-  let signOutClicked = () => {
-    auth.signout(null);
-    ethConnection.clearData();
-    console.log('user signed out: ', auth.user);
-  }
 
   let {userData, verifiedExps, unverifiedExps, verifyingInvitations} = props;
 
@@ -151,7 +153,7 @@ let DashboardPage = (props) => {
           userData == null ? null :
           <Grid item xs={3}>
             <Box padding={2}>
-              <UserDataDisplay value={userData} />
+              <UserDataDisplay value={userData} enableCreateExpButton/>
             </Box>
           </Grid>
         }
@@ -182,8 +184,6 @@ let DashboardPage = (props) => {
         }
         
       </Grid>
-
-      <Button onClick={signOutClicked}>Sign Out</Button>
     </Box>
   );
 }

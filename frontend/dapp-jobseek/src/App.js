@@ -67,22 +67,6 @@ let App =  () => {
                   {signedIn ? <MainPage /> : <Redirect to={pageRoutes.SignInPage} /> }
                 </Route>
 
-                {/* <Route path={pageRoutes.SearchPage}>
-                  {signedIn ? <SearchPage /> : <Redirect to={pageRoutes.SignInPage} /> }
-                </Route>
-
-                <Route path={pageRoutes.SettingPage}>
-                  {signedIn ? <SettingPage /> : <Redirect to={pageRoutes.SignInPage} /> }
-                </Route>
-
-                <Route path={pageRoutes.VerifyExperiencePage}>
-                  {signedIn ? <VerifyExperiencePage /> : <Redirect to={pageRoutes.SignInPage} /> }
-                </Route>
-
-                <Route path={pageRoutes.CreateExperiencePage}>
-                  {signedIn ? <CreateExperiencePage /> : <Redirect to={pageRoutes.SignInPage} /> }
-                </Route> */}
-
                 <Route path={pageRoutes.NotFoundPage}>
                   <NotFoundPage />
                 </Route>

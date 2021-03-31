@@ -119,7 +119,8 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: 'column',
     alignItems: 'center',
     padding: theme.spacing(10, 0, 1, 0),
-  }
+  },
+  
 }));
 
 export default useStyles;
