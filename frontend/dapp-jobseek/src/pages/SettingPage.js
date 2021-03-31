@@ -14,7 +14,7 @@ let SettingPage = (props) => {
   let {userData} = props;
 
   let signOutClicked = () => {
-    auth.signout(null);
+    auth.signout();
     ethConnection.clearData();
     console.log('user signed out: ', auth.user);
   }

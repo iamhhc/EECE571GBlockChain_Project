@@ -13,13 +13,14 @@ import useStyles from '../styles/style';
 import { Title } from '../CustomComponents';
 import pageRoutes from './PageRoutes';
 import { useAuth } from '../Auth';
+import { useEthConnection } from '../EthConnection';
 
 let SignUpPage = () => {
   let classes = useStyles();
   let [state, setState] = useState({
     section: 'accountInfo', // alternate between accountInfo and description
     shouldLeave: false, // set this to true to leave sign up page to sign in page
-    ethAccount: '',
+    ethAccount: 'testCompany',
     fullName: '',
     email: '',
     password: '',
@@ -29,14 +30,16 @@ let SignUpPage = () => {
   });
 
   let auth = useAuth();
+  let ethConnection = useEthConnection();
 
   let handleChange = (prop) => (event) => {
     setState({...state, [prop]: event.target.value});
   }
 
   let submitButtonClicked = () => {
-    // TODO: Implement signup and signin 
-    auth.signin(null);
+    auth.signup(state);
+    auth.signin(state);
+    ethConnection.fakeData();
   }
 
   let accountInfo = (

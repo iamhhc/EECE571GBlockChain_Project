@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, IconButton, Button, Typography, TextField, Grid} from '@material-ui/core';
+import { Box, IconButton, Button, Typography, TextField } from '@material-ui/core';
 import { Link } from 'react-router-dom';
 
 import SearchIcon from '@material-ui/icons/Search';
@@ -73,6 +73,26 @@ export const UserDataThumbnail = (props) => {
           </Box>
         </Box> : null
       }
+    </Box>
+  );
+}
+
+export const VerifyMetric = (props) => {
+  const classes = useStyles();
+  const userData = props.value;
+
+  return (
+    <Box className={classes.content}> 
+      <Box className={classes.verifyNumber} textAlign='center'>
+          <Typography variant='subtitle2'>
+            Verified By {userData.verifiedByNum} Accounts
+          </Typography>
+        </Box>
+      <Box className={classes.verifyNumber} textAlign='center'>
+        <Typography variant='subtitle2'>
+          Has Verified {userData.hasVerifiedNum} Accounts
+        </Typography>
+      </Box> 
     </Box>
   );
 }

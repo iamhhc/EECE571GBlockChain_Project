@@ -3,9 +3,7 @@ import { Box, Button, Grid, TextField, Typography }
   from '@material-ui/core';
 import { Link} from 'react-router-dom';
 
-import { useAuth } from "../Auth";
-import { useEthConnection } from '../EthConnection';
-import { UserDataThumbnail, Record } from '../CustomComponents';
+import { UserDataThumbnail, Record, VerifyMetric } from '../CustomComponents';
 import pageRoutes from './PageRoutes';
 import useStyles from '../styles/style';
 
@@ -15,23 +13,11 @@ export const UserDataDisplay = (props) => {
   const { enableCreateExpButton } = props;
   const userData = props.value;
 
-  
-
-
   return (
     <Box className={classes.content}>
-      <UserDataThumbnail value={userData}/>
+      <UserDataThumbnail value={userData} />
       
-      <Box className={classes.verifyNumber} textAlign='center'>
-        <Typography variant='subtitle2'>
-          Verified By {userData.verifiedByNum} Accounts
-        </Typography>
-      </Box>
-      <Box className={classes.verifyNumber} textAlign='center'>
-        <Typography variant='subtitle2'>
-          Has Verified {userData.hasVerifiedNum} Accounts
-        </Typography>
-      </Box>
+      <VerifyMetric value={userData} />
       
       <Box className={classes.selfDescription}>
         <TextField 
@@ -108,7 +94,7 @@ const UnverifiedExperienceDisplay = (props) => {
 
 const VerifyingInvitationDisplay = (props) => {
   const classes = useStyles();
-  const records = props.value;
+  const {records} = props;
 
   return (
     <Box className={classes.content}>
@@ -125,7 +111,7 @@ const VerifyingInvitationDisplay = (props) => {
                 to={{
                   pathname: pageRoutes.VerifyExperiencePage,
                   state: {
-                    record
+                    record,
                   },
                 }} 
                 value={record}>
@@ -152,7 +138,7 @@ let DashboardPage = (props) => {
         {
           userData == null ? null :
           <Grid item xs={3}>
-            <Box padding={2}>
+            <Box pt={4}>
               <UserDataDisplay value={userData} enableCreateExpButton/>
             </Box>
           </Grid>
@@ -178,7 +164,10 @@ let DashboardPage = (props) => {
           verifyingInvitations == null ? null :
           <Grid item xs={3}> 
             <Box padding={2}>
-              <VerifyingInvitationDisplay value={verifyingInvitations} />
+              <VerifyingInvitationDisplay 
+                records={verifyingInvitations} 
+                userData={userData}
+              />
             </Box>
           </Grid>
         }

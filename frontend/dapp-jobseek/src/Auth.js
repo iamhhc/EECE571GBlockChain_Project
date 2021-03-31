@@ -16,25 +16,32 @@ export const useProvideAuth = () => {
   }
 
   // TODO: implement sign in here
-  const signin = (callback) => {
-    let user = {userAddress: 'testApplicant'};
+  const signin = (value) => {
+    console.log(value);
+
+    let user = {userAddress: value.ethAccount};
+    // temporarily only supoort two accounts in the fake data
+    if (user.userAddress !== 'testApplicant' && user.userAddress !== 'testCompany') {
+      return false;
+    }
+
     localStorage.setItem('user', JSON.stringify(user));
     setUser(JSON.parse(localStorage.getItem('user')));
     
-    if (typeof callback === 'function') {
-      callback();
-    }
+    return true;
+  }
+
+  // TODO: implement sign up here
+  const signup = (value) => {
+    console.log(value);
     return true;
   }
 
   // TODO: implement sign out here
-  const signout = (callback) => { 
+  const signout = () => { 
     localStorage.clear();
     setUser(null);
 
-    if (typeof callback === 'function') {
-      callback();
-    }
     return true;
   }
 
@@ -42,6 +49,7 @@ export const useProvideAuth = () => {
     user,
     refreshed,
     signin,
+    signup,
     signout,
   };
 }

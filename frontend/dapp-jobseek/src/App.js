@@ -8,10 +8,6 @@ import MainPage from './pages/MainPage';
 import SignInPage from './pages/SignInPage';
 import SignUpPage from './pages/SignUpPage';
 import NotFoundPage from './pages/NotFoundPage';
-import SettingPage from './pages/SettingPage';
-import SearchPage from './pages/SearchPage';
-import VerifyExperiencePage from './pages/VerifyExperiencePage';
-import CreateExperiencePage from './pages/CreateExperiencePage';
 
 // page routes
 import pageRoutes from './pages/PageRoutes';

@@ -15,7 +15,7 @@ import { useEthConnection } from '../EthConnection';
 let SignInPage = () => {
 
   let [state, setState] = useState({
-    ethAccount: '',
+    ethAccount: 'testApplicant',
     password: '',
     showPassword: false,
   });
@@ -26,8 +26,7 @@ let SignInPage = () => {
 
   let signInButtonClicked = () => {
     // TODO: sign in here
-    auth.signin(null);
-    console.log('user signed in');
+    auth.signin(state);
     ethConnection.fakeData();
   }
 
@@ -37,6 +36,7 @@ let SignInPage = () => {
       <Box width='35%' className={classes.formGridItemColumn}>
         <Box className={classes.textField}>
           <TextField 
+            value={state.ethAccount}
             id='eth-account'
             label='Eth Account'
             variant='outlined'
