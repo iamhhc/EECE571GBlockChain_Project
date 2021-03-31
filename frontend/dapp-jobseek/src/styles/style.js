@@ -76,7 +76,7 @@ const useStyles = makeStyles((theme) => ({
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'flex-start',
-    justifyContent: 'space-evenly',
+    justifyContent: 'center',
   },
   verifyNumber: {
     backgroundColor: theme.palette.primary.main,

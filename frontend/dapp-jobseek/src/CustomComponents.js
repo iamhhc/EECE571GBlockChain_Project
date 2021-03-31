@@ -35,7 +35,9 @@ export const Header = (props) => {
         size='large' 
         color='primary'
         variant='contained'
-        disableElevation>
+        disableElevation
+        component={Link}
+        to={pageRoutes.MainPage}>
         Distributed Job Seeking
       </Button>
       <Box className={classes.formGridContainerRow}>
