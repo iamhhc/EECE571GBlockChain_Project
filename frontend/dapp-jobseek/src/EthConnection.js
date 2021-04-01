@@ -100,7 +100,7 @@ export const useProvideEthConnection = () => {
       }
     }
 
-    return experiences.length === 0 ? null : experiences; 
+    return experiences; 
   }
 
   const getUnverifiedExperiencesByAddress = (address) => {
@@ -116,7 +116,7 @@ export const useProvideEthConnection = () => {
       }
     }
 
-    return experiences.length === 0 ? null : experiences;
+    return experiences;
   }
 
   const getVerifiyingInvitationsByAddress = (address) => {
@@ -132,7 +132,7 @@ export const useProvideEthConnection = () => {
       }
     }
 
-    return experiences.length === 0 ? null : experiences;
+    return experiences;
   }
 
   const fakeData = () => {

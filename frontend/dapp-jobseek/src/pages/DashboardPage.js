@@ -144,24 +144,18 @@ let DashboardPage = (props) => {
           </Grid>
         }
         
-        {
-          verifiedExps == null ? null :
           <Grid item xs={3}>
             <Box padding={2}>
               <VerifiedExperienceDisplay value={verifiedExps} />
             </Box>
           </Grid>
-        }
-        {
-          unverifiedExps == null ? null :
+
           <Grid item xs={3}> 
             <Box padding={2}>
               <UnverifiedExperienceDisplay value={unverifiedExps} />
             </Box>
           </Grid>
-        }
-        {
-          verifyingInvitations == null ? null :
+
           <Grid item xs={3}> 
             <Box padding={2}>
               <VerifyingInvitationDisplay 
@@ -170,7 +164,7 @@ let DashboardPage = (props) => {
               />
             </Box>
           </Grid>
-        }
+
         
       </Grid>
     </Box>
