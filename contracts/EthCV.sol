@@ -109,7 +109,7 @@ contract EthCV {
         string memory _password,
         string memory _selfDescription,
         bool _isLookingForJobs
-    ) public {
+    ) public returns (bool) {
         require(_ethAccount != address(0), "account can not be empty");
         require(users[_ethAccount].userId == 0, "account can not be existed");
         require(bytes(_fullName).length > 0, "name can not be empty");
@@ -135,6 +135,7 @@ contract EthCV {
         _userForSearch.selfDescription = _selfDescription;
         usersForSearch.push(_userForSearch);
         emit LoginSuccess(_user);
+        return true;
     }
 
     /**
@@ -143,17 +144,18 @@ contract EthCV {
      * front end can get this bool and decide what page the user is going to enter
      */
     function Login(address payable _ethAccount, string memory _password)
-        public
+        public returns (bool)
     {
         require(_ethAccount != address(0), "account can not be empty");
-        require(bytes(_password).length > 0, "password can not be empty");
         if (
             keccak256(abi.encodePacked(users[_ethAccount].password)) ==
             keccak256(abi.encodePacked(_password))
         ) {
             emit LoginSuccess(users[_ethAccount]);
+            return true;
         }
         emit LoginFail("Wrong password!");
+        return false;
     }
 
     //change the self description
