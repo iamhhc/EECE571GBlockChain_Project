@@ -1,6 +1,5 @@
 import React, { useEffect } from 'react';
 import { ThemeProvider } from '@material-ui/core';
-import { useAuth } from './Auth'; 
 import theme from './styles/theme';
 
 // Import pages
@@ -19,29 +18,30 @@ import {
   Redirect
 } from 'react-router-dom';
 
-import { ethConnectionContext, useProvideEthConnection } from './EthConnection';
+import { useEthConnection } from './EthConnection';
+import { useAuth } from './Auth'; 
 
 
-let ProvideEthConnection = ({children}) => {
-  let ethConnection = useProvideEthConnection();
-  return (
-    <ethConnectionContext.Provider value={ethConnection}>
-      {children}
-    </ethConnectionContext.Provider>
-  );
-}
-
-let App =  () => {
-
+let App = () => {
   let auth = useAuth();
+  let ethConnection = useEthConnection();
   let signedIn = auth.user != null;
 
   useEffect(() => {
     auth.refreshed();
   }, []);
 
+  useEffect(() => {
+    const fetchData = async () => {
+      await ethConnection.updateEthData();
+    }
+
+    fetchData();
+  }, []);
+
+
+
   return (
-    <ProvideEthConnection>
       <ThemeProvider theme={theme}>
           <Router>
             <div>
@@ -75,7 +75,6 @@ let App =  () => {
             </div>
           </Router>
       </ThemeProvider>
-    </ProvideEthConnection>
   );
 }
 

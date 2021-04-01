@@ -4,6 +4,7 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 
 import {authContext, useProvideAuth} from './Auth';
+import { ethConnectionContext, useProvideEthConnection } from './EthConnection';
 
 import './styles/index.css';
 
@@ -17,11 +18,22 @@ let ProvideAuth = ({ children }) => {
   );
 }
 
+let ProvideEthConnection = ({children}) => {
+  let ethConnection = useProvideEthConnection();
+  return (
+    <ethConnectionContext.Provider value={ethConnection}>
+      {children}
+    </ethConnectionContext.Provider>
+  );
+}
+
 ReactDOM.render(
   <React.StrictMode>
+    <ProvideEthConnection>
     <ProvideAuth>
       <App /> 
     </ProvideAuth>
+    </ProvideEthConnection>
   </React.StrictMode>,
   document.getElementById('root')
 );

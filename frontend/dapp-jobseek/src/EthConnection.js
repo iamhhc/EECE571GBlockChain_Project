@@ -1,4 +1,6 @@
 import { createContext, useState, useContext } from 'react';
+import Web3 from 'web3';
+import EthCV from './abis/EthCV';
 
 export const ethConnectionContext = createContext();
 
@@ -14,10 +16,60 @@ export const VerifyStatus = {
 
 export const useProvideEthConnection = () => {
   const [ethData, setEthData] = useState(null);
+  const [activeEthAccount, setActiveEthAccount] = useState(null);
+  const [ethCV, setEthCV] = useState(null);
 
-  // TODO: fetch data from the backend
-  const updateEthData = () => {
 
+  const updateEthData = async () => {
+
+    if (window.ethereum) {
+      window.web3 = new Web3(window.ethereum);
+      await window.ethereum.enable();
+    } else if (window.web3) {
+      window.web3 = new Web3(window.web3.currentProvider);
+    } else {
+      window.alert('Non-Ethereum browser detected. You should consider use Metamask!');
+      return;
+    }
+
+    window.ethereum.on('accountsChanged', (accounts) => {
+      if (accounts.length === 0) {
+        setActiveEthAccount(null);
+      } else {
+        setActiveEthAccount(accounts[0]);
+      }
+    })
+
+    const web3 = window.web3;
+    const accounts = await web3.eth.getAccounts();
+    console.log(accounts);
+    setActiveEthAccount(accounts[0]);
+    
+    const networkId = await web3.eth.net.getId();
+    const networkData = EthCV.networks[networkId];
+    console.log(EthCV);
+    console.log(networkId, networkData);
+
+    if (networkData) {
+      const deployedEthCV = new web3.eth.Contract(EthCV.abi, networkData.address);
+      setEthCV(deployedEthCV);
+      
+      const {methods} = deployedEthCV; 
+      const totalUserNumber = await methods.totalUserNumber().call();
+      const totalRecordNumber = await methods.totalNumber().call();
+      const users = await methods.getAllUsers().call();
+      const records = [];
+      for (let i = 0; i < totalRecordNumber; i ++) {
+        const record = await methods.records(i).call();
+        records.push(record);
+      }
+
+      console.log(totalUserNumber, totalRecordNumber, users, records);
+      setEthData({totalUserNumber, totalRecordNumber, users, records});
+    } else {
+      console.log('failed to connect to blockchain');
+      return;
+    }
   }
 
   const getUserByAddress = (address) => {
@@ -83,13 +135,9 @@ export const useProvideEthConnection = () => {
     return experiences.length === 0 ? null : experiences;
   }
 
-  // call this function when page refreshed to load the data in local storage
-  const refreshed = () => {
-    setEthData(JSON.parse(localStorage.getItem('ethData')));
-  }
-
   const fakeData = () => {
-    localStorage.setItem('ethData', JSON.stringify({
+    // localStorage.setItem('ethData', JSON.stringify({
+    setEthData({
       totalUserNumber: 2,
       totalRecordNumber: 6,
       users: [
@@ -220,23 +268,25 @@ export const useProvideEthConnection = () => {
           isActive: true,
         },
       ],
-    }));
+    // }));
+    });
 
-    setEthData(JSON.parse(localStorage.getItem('ethData')));
+    // setEthData(JSON.parse(localStorage.getItem('ethData')));
 
     return true;
   }
 
   const clearData = () => {
     setEthData(null);
-    localStorage.setItem('ethData', null);
+    // localStorage.setItem('ethData', null);
   }
 
   return {
     ethData,
+    ethCV,
+    activeEthAccount, 
     clearData,
     updateEthData,
-    refreshed,
     fakeData,
     getUserByAddress,
     getVerifiedExperiencesByAddress,

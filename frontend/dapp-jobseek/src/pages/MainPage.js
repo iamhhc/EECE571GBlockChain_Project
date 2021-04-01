@@ -28,22 +28,15 @@ let MainPage = () => {
   const [ethData, setEthData] = useState(null);
 
   useEffect(() => {
-    setIsLoading(true);
-    auth.refreshed();
-    ethConnection.fakeData();
-    setIsLoading(false);
-  }, []);
-
-  useEffect(() => {
     let address = auth.user.userAddress;
     setIsLoading(true);
     setUserData(ethConnection.getUserByAddress(address)); 
     setVerifiedExps(ethConnection.getVerifiedExperiencesByAddress(address));
     setUnverifiedExps(ethConnection.getUnverifiedExperiencesByAddress(address));
     setVerifyingInvitations(ethConnection.getVerifiyingInvitationsByAddress(address));
-    setIsLoading(false);
     setEthData(ethConnection.ethData);
-  }, [ethConnection.ethData]);
+    setIsLoading(false);
+  }, []);
 
   console.log(userData, verifiedExps, unverifiedExps, verifyingInvitations, ethData);
 

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useAuth } from '../Auth';
 import { Container, Box, Button, TextField, OutlinedInput, InputAdornment, IconButton, FormControl, InputLabel } from '@material-ui/core';
 import { Link } from 'react-router-dom';
@@ -15,20 +15,29 @@ import { useEthConnection } from '../EthConnection';
 let SignInPage = () => {
 
   let [state, setState] = useState({
-    ethAccount: 'testApplicant',
     password: '',
     showPassword: false,
   });
+  let [ethCV, setEthCV] = useState(null);
+  let [activeEthAccount, setActiveEthAccount] = useState(null);
 
   const classes = useStyles();
   const auth = useAuth();
   const ethConnection = useEthConnection();
+  
+  useEffect(() => {
+    setEthCV(ethConnection.ethCV);
+  }, [ethConnection.ethCV]);
+
+  useEffect(() => {
+    setActiveEthAccount(ethConnection.activeEthAccount);
+  }, [ethConnection.activeEthAccount]);
+
 
   let signInButtonClicked = () => {
-    // TODO: sign in here
-    auth.signin(state);
-    ethConnection.fakeData();
+    auth.signin({ethAccount: activeEthAccount, password: state.password}, ethCV);
   }
+  
 
   return (
     <Container maxWidth='lg' className={classes.content}>
@@ -36,13 +45,14 @@ let SignInPage = () => {
       <Box width='35%' className={classes.formGridItemColumn}>
         <Box className={classes.textField}>
           <TextField 
-            value={state.ethAccount}
+            value={activeEthAccount == null ? 
+              'Please connect to metamask' : activeEthAccount}
             id='eth-account'
             label='Eth Account'
             variant='outlined'
             fullWidth={true}
             color='primary'
-            onChange={(event) => setState({...state, ethAccount:event.target.value})}
+            disabled
           />
         </Box>
         <Box className={classes.textField}>

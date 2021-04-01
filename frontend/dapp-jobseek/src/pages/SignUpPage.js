@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Box, IconButton, Container, Grid, TextField, LinearProgress, 
   Typography, Switch, OutlinedInput, InputAdornment, FormControl, InputLabel } from '@material-ui/core';
 import { Redirect } from 'react-router-dom';
@@ -20,7 +20,6 @@ let SignUpPage = () => {
   let [state, setState] = useState({
     section: 'accountInfo', // alternate between accountInfo and description
     shouldLeave: false, // set this to true to leave sign up page to sign in page
-    ethAccount: 'testCompany',
     fullName: '',
     email: '',
     password: '',
@@ -28,17 +27,25 @@ let SignUpPage = () => {
     description: '',
     jobStatus: true, // whether the user is looking for a job
   });
+  let [activeEthAccount, setActiveEthAccount] = useState(null);
 
   let auth = useAuth();
   let ethConnection = useEthConnection();
+
+  useEffect(() => {
+    setActiveEthAccount(ethConnection.activeEthAccount);
+  }, [ethConnection.activeEthAccount]);
 
   let handleChange = (prop) => (event) => {
     setState({...state, [prop]: event.target.value});
   }
 
   let submitButtonClicked = () => {
-    auth.signup(state);
-    auth.signin(state);
+    auth.signup({...state, ethAccount: activeEthAccount});
+    auth.signin({
+      ethAccount: activeEthAccount,
+      password: state.password,
+    });
     ethConnection.fakeData();
   }
 
@@ -55,13 +62,14 @@ let SignUpPage = () => {
             <Box className={classes.formGridItemColumn} height='350px'>
               <Box className={classes.textField}>
                 <TextField
-                  value={state.ethAccount}
+                  value={activeEthAccount == null ? 
+                    'Please connect to metamask' : activeEthAccount}
                   id='eth-account'
                   label='Eth Account'
                   variant='outlined'
                   fullWidth={true}
                   color='primary'
-                  onChange={handleChange('ethAccount')}
+                  disabled
                 />
               </Box>
               <Box className={classes.textField}>

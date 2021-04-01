@@ -16,23 +16,34 @@ export const useProvideAuth = () => {
   }
 
   // TODO: implement sign in here
-  const signin = (value) => {
-    console.log(value);
-
-    let user = {userAddress: value.ethAccount};
-    // temporarily only supoort two accounts in the fake data
-    if (user.userAddress !== 'testApplicant' && user.userAddress !== 'testCompany') {
-      return false;
+  const signin = async (value, ethCV) => {
+    if (ethCV == null) {
+      console.error('Contract not deployed, cannot sign in');
+      return;
     }
 
-    localStorage.setItem('user', JSON.stringify(user));
-    setUser(JSON.parse(localStorage.getItem('user')));
-    
-    return true;
+    let response = await ethCV.methods.Login(value.ethAccount, value.password)
+    .send({from: value.ethAccount});
+    console.log(response);
+    // if (success) {
+    //   let user = {userAddress: value.ethAccount};
+    //   localStorage.setItem('user', JSON.stringify(user));
+    //   setUser(JSON.parse(localStorage.getItem('user')));
+    //   return true;
+    // } else {
+    //   return false;
+    // }
   }
 
   // TODO: implement sign up here
-  const signup = (value) => {
+  const signup = async (value, ethCV) => {
+    if (!ethCV) {
+      console.error('Contract not deployed, cannot sign up');
+      return;
+    }
+
+
+
     console.log(value);
     return true;
   }
