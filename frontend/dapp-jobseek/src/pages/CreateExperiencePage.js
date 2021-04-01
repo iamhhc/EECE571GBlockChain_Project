@@ -1,14 +1,17 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useAuth } from '../Auth';
-import { Box, Container, Grid, IconButton, Select, LinearProgress, Typography, withStyles, TextField, MenuItem, FormControl, InputLabel } from '@material-ui/core';
+import { Box, Container, Grid, IconButton, Select, LinearProgress, Typography, withStyles, TextField, MenuItem, FormControl, InputLabel, Button } from '@material-ui/core';
 import { ToggleButton, ToggleButtonGroup, Autocomplete } from '@material-ui/lab';
 import HighlightOffIcon from '@material-ui/icons/HighlightOff';
 import NavigateNextIcon from '@material-ui/icons/NavigateNext';
 import NavigateBeforeIcon from '@material-ui/icons/NavigateBefore';
+import DoneIcon from '@material-ui/icons/Done';
 
 import useStyles from '../styles/style';
 import { Redirect } from 'react-router';
+import { useLocation } from "react-router-dom";
 import PageRoutes from './PageRoutes';
+import { useEthConnection } from '../EthConnection';
 
 const StyledToggleButtonGroup = withStyles((theme) => ({
   groupedVertical: {
@@ -47,34 +50,114 @@ const StyledToggleButton = withStyles((theme) => ({
 }))(ToggleButton);
 
 
-let CreateExperiencePage = () => {
+let CreateExperiencePage = (props) => {
 
   const classes = useStyles();
   const auth = useAuth();
-
-  const verifiers = [
-    { name: 'Test 1', address: '' },
-    { name: 'Test 2', address: '' },
-  ];
+  let ethConnection = useEthConnection();
+  // let location = useLocation();
+  // console.log(location.state);
+  let address = auth.user.userAddress;
+  // console.log(address);
+  // console.log(props);
   
   let [state, setState] = useState({
     expType: 'eduExp',
     section: 'chooseType',
     shouldLeave: false,
+    id: '',
+    orgName: '',
+    position: '',
+    description: '',
+    startMonthYear: '',
+    endMonthYear: '',
+    degreeName: '',
+    fieldsOfStudy: '',
+    verifier: null,
+    isEducation: true
   });
+
+  const [users, setUsers] = useState(null);
+  const [nameError, setNameError] = useState(false);
+  const [idError, setIdError] = useState(false);
+  const [posError, setPosError] = useState(false);
+  const [dateError, setDateError] = useState(false);
+
+  useEffect(() => {
+    ethConnection.fakeData();
+  }, []);
+
+  useEffect(() => {
+    setUsers(ethConnection.getAllUsers());
+  }, [ethConnection.ethData]);
 
   let changeExpType = (ev, value) => {
     setState({...state, expType: value});
   }
 
+  let validateForm = () => {
+    let isValid = true;
+    if (state.orgName === '') {
+      setNameError(true);
+      isValid = false;
+    }
+    else {
+      setNameError(false);
+    }
+    if (state.id === '') {
+      setIdError(true);
+      isValid = false;
+    } else {
+      setIdError(false);
+    }
+    if (state.startMonthYear === '' || state.endMonthYear == '') {
+      setDateError(true);
+      isValid = false;
+    } else {
+      let startDate = new Date(state.startMonthYear);
+      let endDate = new Date(state.endMonthYear);
+      if (startDate > endDate) {
+        setDateError(true);
+        isValid = false;
+      } else {
+        setDateError(false);
+      }
+    }
+    if ((state.expType === 'eduExp' && state.degreeName === '') || 
+        (state.expType === 'workExp' && state.position === '')) 
+    {
+      setPosError(true);
+      isValid = false;
+    } else {
+        setPosError(false);
+    }
+
+    if (isValid) {
+      setState({...state, section: 'chooseVerifier'});
+    }
+  }
+
+  let handleChange = (prop) => (event) => {
+    setState({...state, [prop]: event.target.value});
+  }
+
+  let handleSubmit = () => {
+    console.log(state.verifier);
+    if (state.verifier != null) {
+      // TODO: create record
+      setState({...state, section: 'done'});
+    }
+  }
+
   let title = (
-    <Box className={classes.expTitle}>
-      <Typography variant='h2'>Add a New Experience</Typography>
+    <Box className={classes.addExpTitle}>
+      <Typography variant='h4'>Add a New Experience</Typography>
     </Box>
   );
 
   let experienceType = (
     <Box width='70%'>
+      {title}
       <Grid container className={classes.formGridContainerRow}>
         <Grid item xs={1}>
           <IconButton color='secondary'
@@ -115,38 +198,62 @@ let CreateExperiencePage = () => {
         <Grid item xs={12} className={classes.textField}>
           <TextField
             id='institution'
+            value={state.orgName}
             label='Institution Name'
             variant='outlined'
             fullWidth
             color='primary'
+            error={nameError}
+            onChange={handleChange('orgName')}
             required
           />
         </Grid>
         <Grid item xs={12} className={classes.textField}>
           <TextField
             id='student-id'
+            value={state.id}
             label='Student ID'
             variant="outlined"
             fullWidth
             color='primary'
+            error={idError}
+            onChange={handleChange('id')}
             required
           />
         </Grid>
         <Grid item xs={12} className={classes.textField}>
           <TextField
             id='degree'
+            value={state.degreeName}
             label='Degree Name'
             variant="outlined"
             fullWidth
             color='primary'
+            error={posError}
+            onChange={handleChange('degreeName')}
             required
+          />
+        </Grid>
+        <Grid item xs={12} className={classes.textField}>
+          <TextField
+            id='field-of-study'
+            value={state.fieldsOfStudy}
+            label='Field of Study'
+            variant="outlined"
+            fullWidth
+            color='primary'
+            onChange={handleChange('fieldsOfStudy')}
           />
         </Grid>
         <Grid item sm={12} md={6} className={classes.textField}>
           <TextField
             id="edu-start-date"
+            value={state.startMonthYear}
             label="Start Date"
             type="date"
+            error={dateError}
+            onChange={handleChange('startMonthYear')}
+            required
             InputLabelProps={{
               shrink: true,
             }}
@@ -155,8 +262,12 @@ let CreateExperiencePage = () => {
         <Grid item sm={12} md={6} className={classes.textField}>
           <TextField
             id="edu-end-date"
+            value={state.endMonthYear}
             label="End Date"
             type="date"
+            error={dateError}
+            onChange={handleChange('endMonthYear')}
+            required
             InputLabelProps={{
               shrink: true,
             }}
@@ -166,12 +277,14 @@ let CreateExperiencePage = () => {
           <TextField
             id='description'
             label='Optional description'
+            value={state.description}
             variant="outlined"
             fullWidth
             color='primary'
             multiline
             rows={8}
             rowsMax={8}
+            onChange={handleChange('description')}
           />
         </Grid>
       </Grid>
@@ -185,9 +298,12 @@ let CreateExperiencePage = () => {
           <TextField
             id='company'
             label='Company Name'
+            value={state.orgName}
             variant='outlined'
             fullWidth
             color='primary'
+            error={nameError}
+            onChange={handleChange('orgName')}
             required
           />
         </Grid>
@@ -195,9 +311,12 @@ let CreateExperiencePage = () => {
           <TextField
             id='employer-id'
             label='Employer ID'
+            value={state.id}
             variant="outlined"
             fullWidth
             color='primary'
+            error={idError}
+            onChange={handleChange('id')}
             required
           />
         </Grid>
@@ -205,17 +324,24 @@ let CreateExperiencePage = () => {
           <TextField
             id='position'
             label='Position'
-            variant="outlined"
+            value={state.position}
+            variant='outlined'
             fullWidth
             color='primary'
+            error={posError}
+            onChange={handleChange('position')}
             required
           />
         </Grid>
         <Grid item sm={12} md={6} className={classes.textField}>
           <TextField
-            id="work-start-date"
-            label="Start Date"
-            type="date"
+            id='work-start-date'
+            label='Start Date'
+            value={state.startMonthYear}
+            type='date'
+            error={dateError}
+            onChange={handleChange('startMonthYear')}
+            required
             InputLabelProps={{
               shrink: true,
             }}
@@ -223,9 +349,13 @@ let CreateExperiencePage = () => {
         </Grid>
         <Grid item sm={12} md={6} className={classes.textField}>
           <TextField
-            id="work-end-date"
-            label="End Date"
-            type="date"
+            id='work-end-date'
+            label='End Date'
+            value={state.endMonthYear}
+            type='date'
+            error={dateError}
+            onChange={handleChange('endMonthYear')}
+            required
             InputLabelProps={{
               shrink: true,
             }}
@@ -235,9 +365,11 @@ let CreateExperiencePage = () => {
           <TextField
             id='description'
             label='Optional description'
-            variant="outlined"
+            value={state.description}
+            variant='outlined'
             fullWidth
             color='primary'
+            onChange={handleChange('description')}
             multiline
             rows={8}
             rowsMax={8}
@@ -249,6 +381,7 @@ let CreateExperiencePage = () => {
 
   let fillInExperience = (
     <Box width='70%'>
+      {title}
       <Grid container className={classes.formGridContainerRow}>
         <Grid item xs={1}>
           <IconButton color='primary' 
@@ -269,7 +402,7 @@ let CreateExperiencePage = () => {
         </Grid>
         <Grid item xs={1}>
           <IconButton color='primary'
-            onClick={() => setState({...state, section: 'chooseVerifier'})}
+            onClick={validateForm}
           >
             <NavigateNextIcon fontSize='large' />
           </IconButton>
@@ -280,6 +413,7 @@ let CreateExperiencePage = () => {
 
   let chooseVerifier = (
     <Box width='70%'>
+      {title}
       <Grid container className={classes.formGridContainerRow}>
         <Grid item xs={1}>
           <IconButton color='primary'
@@ -306,8 +440,9 @@ let CreateExperiencePage = () => {
             </FormControl> */}
             <Autocomplete
               id="verifier"
-              options={verifiers}
-              getOptionLabel={(option) => option.name}
+              options={users}
+              onChange={(ev, value) => setState({...state, verifier: value})}
+              getOptionLabel={(option) => option.fullName}
               fullWidth
               renderInput={(params) => <TextField {...params} label="Select a Verifier" variant="outlined" />}
             />
@@ -315,7 +450,7 @@ let CreateExperiencePage = () => {
         </Grid>
         <Grid item xs={1}>
           <IconButton color='primary'
-            onClick={() => setState({...state, section: 'done'})}
+            onClick={handleSubmit}
           >
             <NavigateNextIcon fontSize='large' />
           </IconButton>
@@ -325,8 +460,14 @@ let CreateExperiencePage = () => {
   );
 
   let done = (
-    <Box>
-      <h1>Done!</h1>
+    <Box className={classes.addExpDone}>
+      <Typography variant='h5' className={classes.customTypography}>Done!</Typography>
+      <Typography variant='h5' className={classes.customTypography}>Please Wait for Verification</Typography>
+      <IconButton color='primary'
+        onClick={() => setState({...state, shouldLeave: !state.shouldLeave})}
+      >
+        <DoneIcon fontSize='large' />
+      </IconButton>
     </Box>
   );
 
@@ -337,9 +478,10 @@ let CreateExperiencePage = () => {
     'done': done
   };
 
+  // console.log(users);
+
   return (
     <Container maxWidth='lg' className={classes.content}>
-      {title}
       {sectionMap[state.section]}
       {state.shouldLeave ? <Redirect to={PageRoutes.MainPage} /> : null }
     </Container>

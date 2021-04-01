@@ -114,13 +114,23 @@ const useStyles = makeStyles((theme) => ({
   form: {
     width: '100%',
   },
-  expTitle: {
+  addExpTitle: {
+    padding: theme.spacing(10, 0, 1, 0),
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
     padding: theme.spacing(10, 0, 1, 0),
   },
-  
+  customTypography: {
+    color: '#2699fb',
+  },
+  addExpDone: {
+    padding: theme.spacing(15, 0, 1, 0),
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'space-around'
+  }
 }));
 
 export default useStyles;
