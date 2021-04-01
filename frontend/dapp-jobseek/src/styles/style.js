@@ -119,7 +119,6 @@ const useStyles = makeStyles((theme) => ({
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
-    padding: theme.spacing(10, 0, 1, 0),
   },
   customTypography: {
     color: '#2699fb',
@@ -130,6 +129,21 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'space-around'
+  },
+  searchTitle: {
+    padding: theme.spacing(5, 0, 8, 0),
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+  },
+  searchBar: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  searchExit: {
+    marginTop: theme.spacing(10),
   }
 }));
 
