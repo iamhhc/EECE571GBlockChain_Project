@@ -25,9 +25,9 @@ const SearchPage = () => {
   const [verifiedExps, setVerifiedExps] = useState(null);
   const [unverifiedExps, setUnverifiedExps] = useState(null);
 
-  useEffect(() => {
-    ethConnection.fakeData();
-  }, []);
+  // useEffect(() => {
+  //   ethConnection.fakeData();
+  // }, []);
 
   useEffect(() => {
     setUsers(ethConnection.getAllUsers());
