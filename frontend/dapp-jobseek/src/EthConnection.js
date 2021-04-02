@@ -79,7 +79,7 @@ export const useProvideEthConnection = () => {
 
     let {totalUserNumber, users} = ethData; 
     for (let i = 0; i < totalUserNumber; i ++) {
-      if (users[i].userAddress === address) {
+      if (users[i].userAddress.toUpperCase() === address.toUpperCase()) {
         return users[i];
       }
     }
@@ -95,7 +95,7 @@ export const useProvideEthConnection = () => {
 
     let experiences = [];
     for (let i = 0; i < totalRecordNumber; i ++) {
-      if (records[i].status === VerifyStatus.Verified && records[i].recordOwner === address) {
+      if (records[i].status === VerifyStatus.Verified && records[i].recordOwner.toUpperCase() === address.toUpperCase()) {
         experiences.push(records[i]);
       }
     }
@@ -111,7 +111,7 @@ export const useProvideEthConnection = () => {
 
     let experiences = [];
     for (let i = 0; i < totalRecordNumber; i ++) {
-      if (records[i].status === VerifyStatus.Unverified && records[i].recordOwner === address) {
+      if (records[i].status === VerifyStatus.Unverified && records[i].recordOwner.toUpperCase() === address.toUpperCase()) {
         experiences.push(records[i]);
       }
     }
@@ -127,7 +127,7 @@ export const useProvideEthConnection = () => {
 
     let experiences = [];
     for (let i = 0; i < totalRecordNumber; i ++) {
-      if (records[i].status === VerifyStatus.Unverified && records[i].verifier === address) {
+      if (records[i].status === VerifyStatus.Unverified && records[i].verifier.toUpperCase() === address.toUpperCase()) {
         experiences.push(records[i]);
       }
     }

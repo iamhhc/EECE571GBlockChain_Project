@@ -1,4 +1,5 @@
 import { Box, Button, TextField } from "@material-ui/core";
+import { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 
 import { useAuth } from '../Auth';
@@ -6,6 +7,8 @@ import { UserDataThumbnail, VerifyMetric } from "../CustomComponents";
 import { useEthConnection } from '../EthConnection';
 import useStyles from "../styles/style";
 import CreateExperiencePage from "./CreateExperiencePage";
+import { Redirect } from 'react-router';
+import PageRoutes from './PageRoutes';
 
 let VerifyExperiencePage = () => {
   const { record } = useLocation().state;
@@ -14,23 +17,50 @@ let VerifyExperiencePage = () => {
   const classes = useStyles();
 
   const recordOwnerData = ethConnection.getUserByAddress(record.recordOwner);
+  const [ethCV, setEthCV] = useState(null);
+  const [shouldLeave, setShouldLeave] = useState(false);
+  
+  useEffect(() => {
+    setEthCV(ethConnection.ethCV);
+  }, [ethConnection.ethCV]);
 
   console.log(record, auth.user, ethConnection.ethData);
 
   const {isEducation, experience, education, startMonthYear, endMonthYear} = record;
 
   // TODO: implement accepting experience
-  const acceptButtonClicked = () => {
-
+  const acceptButtonClicked = async () => {
+    if (!ethCV) {
+      console.error('Contract not deployed, cannot approve');
+      return;
+    }
+    try {
+      await ethCV.methods.verifyRecord(record.recordId, true).send({from: auth.user.userAddress});
+      ethConnection.updateEthData();
+      setShouldLeave(true);
+    } catch(err) {
+      window.alert(err.message);
+    }
   }
 
   // TODO: implement declining experience
-  const declineButtonClicked = () => {
-
+  const declineButtonClicked = async () => {
+    if (!ethCV) {
+      console.error('Contract not deployed, cannot approve');
+      return;
+    }
+    try {
+      await ethCV.methods.verifyRecord(record.recordId, false).send({from: auth.user.userAddress});
+      ethConnection.updateEthData();
+      setShouldLeave(true);
+    } catch(err) {
+      window.alert(err.message);
+    }
   }
 
   return (
     <Box padding={5} className={classes.content}>
+      {shouldLeave ? <Redirect to={PageRoutes.MainPage} /> : null }
       <Box padding={2} width='50%' className={classes.formGridContainerRow}>
         <UserDataThumbnail value={recordOwnerData} />
         <VerifyMetric value={recordOwnerData} />
@@ -70,7 +100,7 @@ let VerifyExperiencePage = () => {
           <Box className={classes.textField}>
             <TextField 
               label='Field of Study'
-              value={education.fieldOfStudy}
+              value={education.fieldsOfStudy}
               disabled
               fullWidth
               variant='outlined'

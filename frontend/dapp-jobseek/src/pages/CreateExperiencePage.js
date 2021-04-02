@@ -171,6 +171,7 @@ let CreateExperiencePage = (props) => {
       // create record
       let success = await create({...state, isEducation: state.expType === 'eduExp' ? true : false}, ethCV);
       if (success) {
+        ethConnection.updateEthData();
         setState({...state, section: 'done'});
       }
     }
@@ -468,7 +469,7 @@ let CreateExperiencePage = (props) => {
             </Box>
             <Autocomplete
               id="verifier"
-              options={!users ? users : users.filter(user => user.userAddress != address)}
+              options={!users ? users : users.filter(user => user.userAddress.toUpperCase() != address.toUpperCase())}
               onChange={(ev, value) => setState({...state, verifier: value})}
               getOptionLabel={(option) => option.fullName}
               fullWidth
