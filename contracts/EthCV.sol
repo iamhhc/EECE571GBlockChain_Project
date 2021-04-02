@@ -92,10 +92,6 @@ contract EthCV {
     event LoginSuccess(User user);
 
     event LoginFail(string message);
-	
-	event DescriptionChanged(address indexed recordOwner);
-	
-	event JobStatusChanged(address indexed recordOwner);
 
     constructor() {
         appName = "EECE571 ETHCV.COM";
@@ -170,7 +166,6 @@ contract EthCV {
         User memory _user = users[_accountAddress];
         _user.selfDescription = _description;
         users[_accountAddress] = _user;
-		emit DescriptionChanged(msg.sender);
     }
 
     //change the job seeking status
@@ -185,7 +180,6 @@ contract EthCV {
 
         usersForSearch[_user.userId - 1].isLookingForJobs = _user
             .isLookingForJobs;
-		emit JobStatusChanged(msg.sender);
     }
 
     // create a record
@@ -240,8 +234,13 @@ contract EthCV {
         _record.verifier = _verifier;
         _record.isEducation = _isEducation;
         _record.status = UNVERIFIED_CODE;
+<<<<<<< HEAD
 		-record.startMonthYear = _startMonthYear;
 		_record.endMonthYear = _endMonthYear;
+=======
+	_record.startMonthYear = _startMonthYear;
+	_record.endMonthYear = _endMonthYear;
+>>>>>>> db82eb9634f65e4c2793fc92504ec29188c4253c
         _record.isActive = true;
         records[totalNumber] = _record;
         emit RecordCreated(totalNumber, msg.sender, _record);
