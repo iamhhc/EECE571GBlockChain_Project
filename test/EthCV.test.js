@@ -54,6 +54,14 @@ contract(EthCV, ([deployer, user, verifier]) => {
                     && ev.user.password === 'pwd111';
             });
         })
+        it("User login returns true if all correct", async () => {
+            const returnValue = await ethcv.Login.call(user, 'pwd111')
+            assert.equal(true, returnValue)
+        })
+        it("User login returns false if not correct", async () => {
+            const returnValue = await ethcv.Login.call(user, 'pwd')
+            assert.equal(false, returnValue)
+        })
     })
 
     describe('Create a new record of education', async () => {

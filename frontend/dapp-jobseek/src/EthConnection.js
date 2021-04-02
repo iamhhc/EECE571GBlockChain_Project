@@ -83,6 +83,14 @@ export const useProvideEthConnection = () => {
     return experiences.length === 0 ? null : experiences;
   }
 
+  const getAllUsers = () => {
+    if (ethData == null) {
+      return [];
+    }
+    let { users } = ethData;
+    return users;
+  }
+
   // call this function when page refreshed to load the data in local storage
   const refreshed = () => {
     setEthData(JSON.parse(localStorage.getItem('ethData')));
@@ -242,6 +250,7 @@ export const useProvideEthConnection = () => {
     getVerifiedExperiencesByAddress,
     getUnverifiedExperiencesByAddress,
     getVerifiyingInvitationsByAddress,
+    getAllUsers,
   };
 }
 

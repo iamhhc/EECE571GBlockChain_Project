@@ -48,7 +48,7 @@ export const UserDataDisplay = (props) => {
   );
 }
 
-const VerifiedExperienceDisplay = (props) => {
+export const VerifiedExperienceDisplay = (props) => {
   const classes = useStyles();
   const records = props.value;
 
@@ -70,7 +70,7 @@ const VerifiedExperienceDisplay = (props) => {
   );
 }
 
-const UnverifiedExperienceDisplay = (props) => {
+export const UnverifiedExperienceDisplay = (props) => {
   const classes = useStyles();
   const records = props.value;
 
