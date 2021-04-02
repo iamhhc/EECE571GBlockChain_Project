@@ -240,6 +240,8 @@ contract EthCV {
         _record.verifier = _verifier;
         _record.isEducation = _isEducation;
         _record.status = UNVERIFIED_CODE;
+	_record.startMonthYear = _startMonthYear;
+	_record.endMonthYear = _endMonthYear;
         _record.isActive = true;
         records[totalNumber] = _record;
         emit RecordCreated(totalNumber, msg.sender, _record);
