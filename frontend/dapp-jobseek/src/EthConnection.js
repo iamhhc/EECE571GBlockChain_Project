@@ -9,9 +9,9 @@ export const useEthConnection = () => {
 };
 
 export const VerifyStatus = {
-  Unverified: 0,
-  Verified: 1,
-  Disapproved: 2,
+  Unverified: '0',
+  Verified: '1',
+  Disapproved: '2',
 };
 
 export const useProvideEthConnection = () => {
