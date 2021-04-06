@@ -54,6 +54,14 @@ contract(EthCV, ([deployer, user, verifier]) => {
                     && ev.user.password === 'pwd111';
             });
         })
+        it("User login returns true if all correct", async () => {
+            const returnValue = await ethcv.Login.call(user, 'pwd111')
+            assert.equal(true, returnValue)
+        })
+        it("User login returns false if not correct", async () => {
+            const returnValue = await ethcv.Login.call(user, 'pwd')
+            assert.equal(false, returnValue)
+        })
     })
 
     describe('Create a new record of education', async () => {
@@ -210,11 +218,6 @@ contract(EthCV, ([deployer, user, verifier]) => {
         before(async () => {
             result = await ethcv.changeJobStatus(user, { from: user });
         })
-        it("Changing the job status should be successful if all correct", async () => {
-            truffleAssert.eventEmitted(result, 'JobStatusChanged', (ev) => {
-                return ev.recordOwner.toString() === user.toString();
-            });
-        })
         it("only the owner can change the status", async () => {
             await truffleAssert.fails(ethcv.changeJobStatus(user, { from: verifier }), truffleAssert.ErrorType.REVERT);
         });
@@ -224,11 +227,6 @@ contract(EthCV, ([deployer, user, verifier]) => {
         let result
         before(async () => {
             result = await ethcv.changeDescription(user, 'new self description', { from: user });
-        })
-        it("Changing the description should be successful if all correct", async () => {
-            truffleAssert.eventEmitted(result, 'DescriptionChanged', (ev) => {
-                return ev.recordOwner.toString() === user.toString();
-            });
         })
         it("only the owner can change the description", async () => {
             await truffleAssert.fails(ethcv.changeDescription(user, 'new self description1', { from: verifier }), 

@@ -92,10 +92,6 @@ contract EthCV {
     event LoginSuccess(User user);
 
     event LoginFail(string message);
-	
-	event DescriptionChanged(address indexed recordOwner);
-	
-	event JobStatusChanged(address indexed recordOwner);
 
     constructor() {
         appName = "EECE571 ETHCV.COM";
@@ -109,7 +105,7 @@ contract EthCV {
         string memory _password,
         string memory _selfDescription,
         bool _isLookingForJobs
-    ) public {
+    ) public returns (bool) {
         require(_ethAccount != address(0), "account can not be empty");
         require(users[_ethAccount].userId == 0, "account can not be existed");
         require(bytes(_fullName).length > 0, "name can not be empty");
@@ -135,6 +131,7 @@ contract EthCV {
         _userForSearch.selfDescription = _selfDescription;
         usersForSearch.push(_userForSearch);
         emit LoginSuccess(_user);
+        return true;
     }
 
     /**
@@ -143,17 +140,18 @@ contract EthCV {
      * front end can get this bool and decide what page the user is going to enter
      */
     function Login(address payable _ethAccount, string memory _password)
-        public
+        public returns (bool)
     {
         require(_ethAccount != address(0), "account can not be empty");
-        require(bytes(_password).length > 0, "password can not be empty");
         if (
             keccak256(abi.encodePacked(users[_ethAccount].password)) ==
             keccak256(abi.encodePacked(_password))
         ) {
             emit LoginSuccess(users[_ethAccount]);
+            return true;
         }
         emit LoginFail("Wrong password!");
+        return false;
     }
 
     //change the self description
@@ -168,7 +166,6 @@ contract EthCV {
         User memory _user = users[_accountAddress];
         _user.selfDescription = _description;
         users[_accountAddress] = _user;
-		emit DescriptionChanged(msg.sender);
     }
 
     //change the job seeking status
@@ -183,7 +180,6 @@ contract EthCV {
 
         usersForSearch[_user.userId - 1].isLookingForJobs = _user
             .isLookingForJobs;
-		emit JobStatusChanged(msg.sender);
     }
 
     // create a record
@@ -238,6 +234,13 @@ contract EthCV {
         _record.verifier = _verifier;
         _record.isEducation = _isEducation;
         _record.status = UNVERIFIED_CODE;
+<<<<<<< HEAD
+		-record.startMonthYear = _startMonthYear;
+		_record.endMonthYear = _endMonthYear;
+=======
+	_record.startMonthYear = _startMonthYear;
+	_record.endMonthYear = _endMonthYear;
+>>>>>>> db82eb9634f65e4c2793fc92504ec29188c4253c
         _record.isActive = true;
         records[totalNumber] = _record;
         emit RecordCreated(totalNumber, msg.sender, _record);

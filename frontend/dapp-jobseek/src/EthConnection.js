@@ -135,6 +135,14 @@ export const useProvideEthConnection = () => {
     return experiences.length === 0 ? null : experiences;
   }
 
+  const getAllUsers = () => {
+    if (ethData == null) {
+      return [];
+    }
+    let { users } = ethData;
+    return users;
+  }
+
   const fakeData = () => {
     // localStorage.setItem('ethData', JSON.stringify({
     setEthData({
@@ -292,6 +300,7 @@ export const useProvideEthConnection = () => {
     getVerifiedExperiencesByAddress,
     getUnverifiedExperiencesByAddress,
     getVerifiyingInvitationsByAddress,
+    getAllUsers,
   };
 }
 
