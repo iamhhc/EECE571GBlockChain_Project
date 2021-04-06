@@ -234,13 +234,8 @@ contract EthCV {
         _record.verifier = _verifier;
         _record.isEducation = _isEducation;
         _record.status = UNVERIFIED_CODE;
-<<<<<<< HEAD
-		-record.startMonthYear = _startMonthYear;
-		_record.endMonthYear = _endMonthYear;
-=======
 	_record.startMonthYear = _startMonthYear;
 	_record.endMonthYear = _endMonthYear;
->>>>>>> db82eb9634f65e4c2793fc92504ec29188c4253c
         _record.isActive = true;
         records[totalNumber] = _record;
         emit RecordCreated(totalNumber, msg.sender, _record);
