@@ -234,7 +234,7 @@ let SignUpPage = () => {
                 <TextField
                   value={state.description}
                   id='description'
-                  label='Discription of Yourself'
+                  label='Description of Yourself'
                   variant='outlined'
                   fullWidth={true}
                   color='primary'
