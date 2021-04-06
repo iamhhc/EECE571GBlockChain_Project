@@ -145,14 +145,14 @@ let CreateExperiencePage = (props) => {
       return false;
     }
     console.log('value', value);
-    try {
+    // try {
     await ethCV.methods.createRecord(value.id, value.orgName, value.position, value.description, 
       value.startMonthYear, value.endMonthYear, value.degreeName, value.fieldsOfStudy, 
       value.verifier.userAddress, value.isEducation).send({from: address, value: '1000000000000000000'});
-    } catch (err) {
-      window.alert(err.message);
-      return false;
-    }
+    // } catch (err) {
+    //   window.alert(err.message);
+    //   return false;
+    // }
     // .once('receipt', async (receipt) => {
     //   console.log(receipt);
     // }).on('error', async (error) => { 

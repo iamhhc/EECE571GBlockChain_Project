@@ -166,6 +166,8 @@ contract EthCV {
         User memory _user = users[_accountAddress];
         _user.selfDescription = _description;
         users[_accountAddress] = _user;
+
+        usersForSearch[_user.userId - 1].selfDescription = _description;
     }
 
     //change the job seeking status

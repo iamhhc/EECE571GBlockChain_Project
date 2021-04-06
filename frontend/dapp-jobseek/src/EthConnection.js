@@ -59,7 +59,7 @@ export const useProvideEthConnection = () => {
       const totalRecordNumber = await methods.totalNumber().call();
       const users = await methods.getAllUsers().call();
       const records = [];
-      for (let i = 0; i < totalRecordNumber; i ++) {
+      for (let i = 1; i <= totalRecordNumber; i ++) {
         const record = await methods.records(i).call();
         records.push(record);
       }

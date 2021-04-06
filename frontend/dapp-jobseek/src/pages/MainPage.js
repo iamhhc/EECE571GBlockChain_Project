@@ -28,6 +28,16 @@ let MainPage = () => {
   const [ethData, setEthData] = useState(null);
 
   useEffect(() => {
+    setIsLoading(true);
+    const fetchData = async () => {
+      await ethConnection.updateEthData();
+    }
+
+    fetchData();
+    setIsLoading(false);
+  }, []);
+
+  useEffect(() => {
     let address = auth.user.userAddress;
     setIsLoading(true);
     setUserData(ethConnection.getUserByAddress(address)); 
