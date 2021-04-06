@@ -22,30 +22,33 @@ export const useProvideAuth = () => {
       return;
     }
 
-    let response = await ethCV.methods.Login(value.ethAccount, value.password)
-    .send({from: value.ethAccount});
-    console.log(response);
-    // if (success) {
-    //   let user = {userAddress: value.ethAccount};
-    //   localStorage.setItem('user', JSON.stringify(user));
-    //   setUser(JSON.parse(localStorage.getItem('user')));
-    //   return true;
-    // } else {
-    //   return false;
-    // }
+    let success = await ethCV.methods.Login(value.ethAccount, value.password)
+    .call({from: value.ethAccount});
+    console.log('login: ', success);
+
+    if (success) {
+      let user = {userAddress: value.ethAccount};
+      localStorage.setItem('user', JSON.stringify(user));
+      setUser(JSON.parse(localStorage.getItem('user')));
+    }
+
+    return success;
   }
 
-  // TODO: implement sign up here
+  // TODO: implement sign up here 
   const signup = async (value, ethCV) => {
     if (!ethCV) {
       console.error('Contract not deployed, cannot sign up');
       return;
     }
 
+    let {ethAccount, fullName, email, password, description, jobStatus} = value;
+    let success = await ethCV.methods.Register(
+      ethAccount, fullName, email, password, description, jobStatus
+    ).send({from: ethAccount});
+    console.log(success);
 
-
-    console.log(value);
-    return true;
+    return success;
   }
 
   // TODO: implement sign out here

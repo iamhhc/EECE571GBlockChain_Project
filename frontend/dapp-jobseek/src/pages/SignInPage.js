@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '../Auth';
-import { Container, Box, Button, TextField, OutlinedInput, InputAdornment, IconButton, FormControl, InputLabel } from '@material-ui/core';
+import { Container, Box, Button, TextField, OutlinedInput, InputAdornment, IconButton, FormControl, InputLabel, FormHelperText } from '@material-ui/core';
 import { Link } from 'react-router-dom';
 
 import useStyles from '../styles/style';
@@ -17,6 +17,7 @@ let SignInPage = () => {
   let [state, setState] = useState({
     password: '',
     showPassword: false,
+    signInFailed: false,
   });
   let [ethCV, setEthCV] = useState(null);
   let [activeEthAccount, setActiveEthAccount] = useState(null);
@@ -34,8 +35,18 @@ let SignInPage = () => {
   }, [ethConnection.activeEthAccount]);
 
 
-  let signInButtonClicked = () => {
-    auth.signin({ethAccount: activeEthAccount, password: state.password}, ethCV);
+  let signInButtonClicked = async () => {
+    // password cannot be empty
+    if (state.password === '') {
+      setState({...state, signInFailed:true});
+      return;
+    }
+
+    let success = await auth.signin({
+      ethAccount: activeEthAccount, password: state.password}, ethCV);
+    if (!success) {
+      setState({...state, signInFailed:true});
+    }
   }
   
 
@@ -62,7 +73,13 @@ let SignInPage = () => {
               id='password'
               type={state.showPassword ? 'text' : 'password'}
               value={state.password}
-              onChange={(event) => setState({...state, password:event.target.value})}
+              onChange={(event) => {
+                setState({
+                  ...state, 
+                  password: event.target.value,
+                  signInFailed: false
+                });
+              }}
               endAdornment={
                 <InputAdornment position='end'>
                   <IconButton
@@ -76,7 +93,17 @@ let SignInPage = () => {
               }
               color='primary'
               fullWidth={true}
+              error={state.signInFailed}
             />
+            {
+              state.signInFailed ? 
+              <FormHelperText
+                error
+                variant='outlined'
+              >
+                Incorrect Password
+               </FormHelperText> : null
+            } 
           </FormControl>
           
         </Box>

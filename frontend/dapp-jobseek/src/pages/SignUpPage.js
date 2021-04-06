@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Box, IconButton, Container, Grid, TextField, LinearProgress, 
-  Typography, Switch, OutlinedInput, InputAdornment, FormControl, InputLabel } from '@material-ui/core';
+  Typography, Switch, OutlinedInput, InputAdornment, FormControl, InputLabel,
+  FormHelperText } from '@material-ui/core';
 import { Redirect } from 'react-router-dom';
 import HighlightOffIcon from '@material-ui/icons/HighlightOff';
 import NavigateNextIcon from '@material-ui/icons/NavigateNext';
@@ -21,32 +22,96 @@ let SignUpPage = () => {
     section: 'accountInfo', // alternate between accountInfo and description
     shouldLeave: false, // set this to true to leave sign up page to sign in page
     fullName: '',
+    fullNameInvalid: false,
     email: '',
+    emailInvalid: false,
     password: '',
+    passwordInvalid: false,
     showPassword: false,
     description: '',
+    descriptionInvalid: false,
     jobStatus: true, // whether the user is looking for a job
+    ethAccountInvalid: false,
   });
   let [activeEthAccount, setActiveEthAccount] = useState(null);
+  let [ethCV, setEthCV] = useState(null);
 
   let auth = useAuth();
   let ethConnection = useEthConnection();
 
   useEffect(() => {
     setActiveEthAccount(ethConnection.activeEthAccount);
-  }, [ethConnection.activeEthAccount]);
+  }, [ethConnection.activeEthAccount]); 
+
+  useEffect(() => {
+    setEthCV(ethConnection.ethCV);
+  }, [ethConnection.ethCV]);
+
 
   let handleChange = (prop) => (event) => {
-    setState({...state, [prop]: event.target.value});
+    setState({
+      ...state, 
+      [prop]: event.target.value,
+      [prop+'Invalid']: false,
+    });
   }
 
-  let submitButtonClicked = () => {
-    auth.signup({...state, ethAccount: activeEthAccount});
-    auth.signin({
-      ethAccount: activeEthAccount,
-      password: state.password,
-    });
-    ethConnection.fakeData();
+  let transitToDescription = () => {
+    let {
+      fullNameInvalid, 
+      emailInvalid, 
+      passwordInvalid, 
+      ethAccountInvalid,
+    } = state;
+    if (state.fullName.length === 0) {
+      fullNameInvalid = true;
+    }
+
+    if (state.email.length === 0) {
+      emailInvalid = true;
+    }
+
+    if (state.password.length === 0) {
+      passwordInvalid = true;
+    }
+
+    if (activeEthAccount == null) {
+      ethAccountInvalid = true;
+    }
+
+    if (fullNameInvalid || emailInvalid || 
+      passwordInvalid || ethAccountInvalid) {
+      setState({
+        ...state, 
+        fullNameInvalid, 
+        emailInvalid, 
+        passwordInvalid, 
+        ethAccountInvalid,
+      });
+      return;
+    }
+
+    setState({...state, section:'description'});
+  }
+
+
+  let submitButtonClicked = async () => {
+    if (state.description.length === 0) {
+      setState({...state, descriptionInvalid: true});
+      return;
+    }
+
+    let success = await auth.signup(
+      {...state, ethAccount: activeEthAccount}, ethCV);
+    
+    if (!success) {
+      window.alert('Error Occured When Trying to Create an Account');
+      return;
+    }
+
+    ethConnection.updateEthData();
+
+    setState({...state, shouldLeave: true});
   }
 
   let accountInfo = (
@@ -70,6 +135,8 @@ let SignUpPage = () => {
                   fullWidth={true}
                   color='primary'
                   disabled
+                  error={state.ethAccountInvalid}
+                  onChange={() => setState({...state, ethAccountInvalid:false})}
                 />
               </Box>
               <Box className={classes.textField}>
@@ -81,6 +148,8 @@ let SignUpPage = () => {
                   fullWidth={true}
                   color='primary'
                   onChange={handleChange('fullName')}
+                  error={state.fullNameInvalid}
+                  helperText={state.fullNameInvalid ? 'cannot be empty' : ''}
                 />
               </Box>
               <Box className={classes.textField}>
@@ -92,7 +161,9 @@ let SignUpPage = () => {
                   fullWidth={true}
                   color='primary'
                   onChange={handleChange('email')}
-                />
+                  error={state.emailInvalid}
+                  helperText={state.emailInvalid ? 'cannot be empty' : ''}
+                /> 
               </Box>
               <Box className={classes.textField}>
               <FormControl variant='outlined' fullWidth>
@@ -115,7 +186,17 @@ let SignUpPage = () => {
                   }
                   color='primary'
                   fullWidth={true}
+                  error={state.passwordInvalid}
                 />
+                {
+                  state.passwordInvalid ? 
+                  <FormHelperText
+                    error
+                    variant='outlined'
+                  >
+                    cannot be empty
+                  </FormHelperText> : null
+                }
               </FormControl>
               </Box>
               <Box className={classes.linearProgress} >
@@ -128,7 +209,7 @@ let SignUpPage = () => {
           </Grid>
           <Grid item xs={1}>
             <IconButton color='primary' 
-              onClick={() => setState({...state, section: 'description'})}
+              onClick={transitToDescription}
             >
               <NavigateNextIcon fontSize='large' />
             </IconButton>
@@ -153,7 +234,7 @@ let SignUpPage = () => {
                 <TextField
                   value={state.description}
                   id='description'
-                  label='Discription of Yourself'
+                  label='Description of Yourself'
                   variant='outlined'
                   fullWidth={true}
                   color='primary'
@@ -161,6 +242,8 @@ let SignUpPage = () => {
                   rows={10}
                   rowsMax={10}
                   onChange={handleChange('description')}
+                  error={state.descriptionInvalid}
+                  helperText={state.descriptionInvalid ? 'cannot be empty' : ''}
                 />
               </Box>
               <Box className={classes.textField}>

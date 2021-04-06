@@ -25,9 +25,9 @@ const SearchPage = () => {
   const [verifiedExps, setVerifiedExps] = useState(null);
   const [unverifiedExps, setUnverifiedExps] = useState(null);
 
-  useEffect(() => {
-    ethConnection.fakeData();
-  }, []);
+  // useEffect(() => {
+  //   ethConnection.fakeData();
+  // }, []);
 
   useEffect(() => {
     setUsers(ethConnection.getAllUsers());
@@ -48,7 +48,9 @@ const SearchPage = () => {
   let searchBox = (
     <Box width='70%'>
       <IconButton color='secondary' className={classes.searchExit}
-        onClick={() => setState({...state, shouldLeave: !state.shouldLeave})}
+        onClick={() => { setState({...state, shouldLeave: !state.shouldLeave});
+          ethConnection.updateEthData();
+        }}
       >
         <HighlightOffIcon fontSize='large' />
       </IconButton>

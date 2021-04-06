@@ -123,7 +123,7 @@ export const Record = ({record}) => {
             />
             <TextField
               label='Field of Study'
-              value={education.fieldOfStudy}
+              value={education.fieldsOfStudy}
               disabled
               fullWidth
               InputProps={{disableUnderline: true}}

@@ -9,7 +9,7 @@ import DoneIcon from '@material-ui/icons/Done';
 
 import useStyles from '../styles/style';
 import { Redirect } from 'react-router';
-import { useLocation } from "react-router-dom";
+import { useLocation, Link } from "react-router-dom";
 import PageRoutes from './PageRoutes';
 import { useEthConnection } from '../EthConnection';
 
@@ -55,11 +55,11 @@ let CreateExperiencePage = (props) => {
   const classes = useStyles();
   const auth = useAuth();
   let ethConnection = useEthConnection();
-  // let location = useLocation();
-  // console.log(location.state);
   let address = auth.user.userAddress;
   // console.log(address);
   // console.log(props);
+
+  let [ethCV, setEthCV] = useState(null);
   
   let [state, setState] = useState({
     expType: 'eduExp',
@@ -74,7 +74,6 @@ let CreateExperiencePage = (props) => {
     degreeName: '',
     fieldsOfStudy: '',
     verifier: null,
-    isEducation: true
   });
 
   const [users, setUsers] = useState(null);
@@ -83,13 +82,16 @@ let CreateExperiencePage = (props) => {
   const [posError, setPosError] = useState(false);
   const [dateError, setDateError] = useState(false);
 
-  useEffect(() => {
-    ethConnection.fakeData();
-  }, []);
 
   useEffect(() => {
     setUsers(ethConnection.getAllUsers());
   }, [ethConnection.ethData]);
+
+  useEffect(() => {
+    setEthCV(ethConnection.ethCV);
+  }, [ethConnection.ethCV]);
+
+  // console.log(users);
 
   let changeExpType = (ev, value) => {
     setState({...state, expType: value});
@@ -137,15 +139,41 @@ let CreateExperiencePage = (props) => {
     }
   }
 
+  const create = async (value, ethCV) => {
+    if (ethCV == null) {
+      console.error('Contract not deployed, cannot create record');
+      return false;
+    }
+    console.log('value', value);
+    try {
+    await ethCV.methods.createRecord(value.id, value.orgName, value.position, value.description, 
+      value.startMonthYear, value.endMonthYear, value.degreeName, value.fieldsOfStudy, 
+      value.verifier.userAddress, value.isEducation).send({from: address, value: '1000000000000000000'});
+    } catch (err) {
+      window.alert(err.message);
+      return false;
+    }
+    // .once('receipt', async (receipt) => {
+    //   console.log(receipt);
+    // }).on('error', async (error) => { 
+    //   console.log(error);
+    // });
+    return true;
+  }
+
   let handleChange = (prop) => (event) => {
     setState({...state, [prop]: event.target.value});
   }
 
-  let handleSubmit = () => {
-    console.log(state.verifier);
+  let handleSubmit = async () => {
+    console.log(state.verifier.userAddress);
     if (state.verifier != null) {
-      // TODO: create record
-      setState({...state, section: 'done'});
+      // create record
+      let success = await create({...state, isEducation: state.expType === 'eduExp' ? true : false}, ethCV);
+      if (success) {
+        ethConnection.updateEthData();
+        setState({...state, section: 'done'});
+      }
     }
   }
 
@@ -204,6 +232,7 @@ let CreateExperiencePage = (props) => {
             fullWidth
             color='primary'
             error={nameError}
+            helperText={nameError ? 'cannot be empty' : ''}
             onChange={handleChange('orgName')}
             required
           />
@@ -217,6 +246,7 @@ let CreateExperiencePage = (props) => {
             fullWidth
             color='primary'
             error={idError}
+            helperText={idError ? 'cannot be empty' : ''}
             onChange={handleChange('id')}
             required
           />
@@ -230,6 +260,7 @@ let CreateExperiencePage = (props) => {
             fullWidth
             color='primary'
             error={posError}
+            helperText={posError ? 'cannot be empty' : ''}
             onChange={handleChange('degreeName')}
             required
           />
@@ -252,6 +283,7 @@ let CreateExperiencePage = (props) => {
             label="Start Date"
             type="date"
             error={dateError}
+            helperText={dateError ? 'date empty or start date after end date' : ''}
             onChange={handleChange('startMonthYear')}
             required
             InputLabelProps={{
@@ -266,6 +298,7 @@ let CreateExperiencePage = (props) => {
             label="End Date"
             type="date"
             error={dateError}
+            helperText={dateError ? 'date empty or start date after end date' : ''}
             onChange={handleChange('endMonthYear')}
             required
             InputLabelProps={{
@@ -303,6 +336,7 @@ let CreateExperiencePage = (props) => {
             fullWidth
             color='primary'
             error={nameError}
+            helperText={nameError ? 'cannot be empty' : ''}
             onChange={handleChange('orgName')}
             required
           />
@@ -316,6 +350,7 @@ let CreateExperiencePage = (props) => {
             fullWidth
             color='primary'
             error={idError}
+            helperText={idError ? 'cannot be empty' : ''}
             onChange={handleChange('id')}
             required
           />
@@ -329,6 +364,7 @@ let CreateExperiencePage = (props) => {
             fullWidth
             color='primary'
             error={posError}
+            helperText={posError ? 'cannot be empty' : ''}
             onChange={handleChange('position')}
             required
           />
@@ -340,6 +376,7 @@ let CreateExperiencePage = (props) => {
             value={state.startMonthYear}
             type='date'
             error={dateError}
+            helperText={dateError ? 'date empty or start date after end date' : ''}
             onChange={handleChange('startMonthYear')}
             required
             InputLabelProps={{
@@ -354,6 +391,7 @@ let CreateExperiencePage = (props) => {
             value={state.endMonthYear}
             type='date'
             error={dateError}
+            helperText={dateError ? 'date empty or start date after end date' : ''}
             onChange={handleChange('endMonthYear')}
             required
             InputLabelProps={{
@@ -429,18 +467,9 @@ let CreateExperiencePage = (props) => {
                 {state.expType === 'eduExp' ? 'Educational Experience' : 'Work Experience'}
               </Typography>
             </Box>
-            {/* <FormControl fullWidth>
-              <InputLabel id='verifier-label'>Select a Verifier</InputLabel>
-              <Select labelId='verifier-label'>
-                <MenuItem  value='' />
-                <MenuItem value={10}>Ten</MenuItem>
-                <MenuItem value={20}>Twenty</MenuItem>
-                <MenuItem value={30}>Thirty</MenuItem>
-              </Select>
-            </FormControl> */}
             <Autocomplete
               id="verifier"
-              options={users}
+              options={!users ? users : users.filter(user => user.userAddress.toUpperCase() != address.toUpperCase())}
               onChange={(ev, value) => setState({...state, verifier: value})}
               getOptionLabel={(option) => option.fullName}
               fullWidth

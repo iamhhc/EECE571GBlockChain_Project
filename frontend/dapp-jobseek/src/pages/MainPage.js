@@ -36,7 +36,7 @@ let MainPage = () => {
     setVerifyingInvitations(ethConnection.getVerifiyingInvitationsByAddress(address));
     setEthData(ethConnection.ethData);
     setIsLoading(false);
-  }, []);
+  }, [ethConnection.ethData]);
 
   console.log(userData, verifiedExps, unverifiedExps, verifyingInvitations, ethData);
 
